@@ -12,7 +12,7 @@ import NavLink from "./navlink";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-gradient-to-br from-pink-50 to-rose-100 overflow-hidden h-90">
+    <footer className="relative bg-gradient-to-br from-pink-50 to-rose-100 overflow-hidden h-85">
       {/* Wave Animation - Full Coverage */}
       <div className="absolute inset-0 w-full h-full">
         {/* Wave Layer 1 */}
@@ -45,7 +45,7 @@ const Footer = () => {
       </div>
 
       {/* Footer Content */}
-      <div className="relative z-10 pt-16 pb-8">
+      <div className="relative z-10 pt-16.5 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Centered Content */}
           <div className="text-center space-y-6">
@@ -139,7 +139,7 @@ const Footer = () => {
               <div className="text-center text-gray-600 text-xs">
                 Design By -{" "}
                 <span className="text-pink-600 font-medium">DocDigest</span> ©
-                2024 DocDigest. All rights reserved.
+                {new Date().getFullYear()} DocDigest. All rights reserved.
               </div>
             </div>
           </div>

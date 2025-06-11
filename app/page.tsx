@@ -3,6 +3,7 @@ import HeroSection from "@/components/home/heroSection";
 import DemoSection from "@/components/home/demoSection";
 import HowItWorksSection from "@/components/home/howItWorks";
 import PricingSection from "@/components/home/pricingSection";
+import CTASection from "@/components/home/ctaSection";
 
 export default function Home() {
   return (
@@ -12,10 +13,9 @@ export default function Home() {
         <HeroSection />
         <DemoSection />
         <HowItWorksSection />
+        <PricingSection />
+        <CTASection />
       </div>
-
-      <PricingSection />
-      {/* <CTASection/> */}
     </div>
   );
 }

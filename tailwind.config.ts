@@ -67,10 +67,22 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        scrollLeft: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        scrollRight: {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "scroll-left": "scrollLeft 40s linear infinite",
+        "scroll-right": "scrollRight 40s linear infinite",
+        "scroll-left-slow": "scrollLeft 60s linear infinite",
+        "scroll-right-slow": "scrollRight 60s linear infinite",
       },
     },
   },

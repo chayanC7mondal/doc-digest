@@ -4,6 +4,7 @@ import DemoSection from "@/components/home/demoSection";
 import HowItWorksSection from "@/components/home/howItWorks";
 import PricingSection from "@/components/home/pricingSection";
 import CTASection from "@/components/home/ctaSection";
+import { SliderSection } from "@/components/home/sliderSection";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <HowItWorksSection />
         <PricingSection />
         <CTASection />
+        <SliderSection />
       </div>
     </div>
   );

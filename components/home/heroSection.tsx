@@ -10,9 +10,9 @@ export default function HeroSection() {
       <div className="relative p-[1px] overflow-hidden rounded-full bg-gradient-to-r from-rose-200 via-rose-500 to-rose-800 animate-gradient-x group">
         <Badge
           variant={"secondary"}
-          className="relative px-6 py-2 text-base font-medium bg-white rounded-full transition-colors duration-200 group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:to-rose-100"
+          className="relative px-6 py-2 text-base font-medium bg-white rounded-full transition-colors duration-200 group-hover:bg-gradient-to-r group-hover:from-transparent group-hover:to-rose-200"
         >
-          <Sparkles className="h-6 w-6 mr-2 text-rose-600 animate-pulse" />
+          <Sparkles className="h-8 w-8 mr-2 text-rose-600 animate-pulse" />
           <p className="text-base text-rose-600">Powered by AI</p>
         </Badge>
       </div>
@@ -35,7 +35,7 @@ export default function HeroSection() {
           <Sparkles className="absolute -top-3 -left-4 h-4 w-4 text-rose-400 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-300 ease-out" />
           {/* <Sparkles className="absolute top-1/2 left-full h-5 w-5 text-rose-500 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-500 ease-out delay-100" /> */}
           <Sparkles className="absolute -bottom-3 -right-3 h-4 w-4 text-rose-300 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-700 ease-out delay-200" />
-        </span>
+        </span>{" "}
         summaries
       </h1>
 

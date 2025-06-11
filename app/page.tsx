@@ -1,6 +1,7 @@
 import BgGradient from "@/components/common/bg-gradient";
-import DemoSection from "@/components/home/demoSection";
 import HeroSection from "@/components/home/heroSection";
+import DemoSection from "@/components/home/demoSection";
+import HowItWorksSection from "@/components/home/howItWorks";
 
 export default function Home() {
   return (
@@ -8,9 +9,10 @@ export default function Home() {
       <BgGradient />
       <div className="flex flex-col">
         <HeroSection />
+        <DemoSection />
       </div>
-      <DemoSection />
-      {/* <HowItWorksSection/>     */}
+
+      <HowItWorksSection />
       {/* <PricingSection/> */}
       {/* <CTASection/> */}
     </div>

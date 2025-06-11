@@ -59,6 +59,10 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        pendulum: {
+          "0%, 100%": { transform: "translateY(-50%) rotate(10deg)" },
+          "50%": { transform: "translateY(-50%) rotate(-10deg)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -71,6 +75,7 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        pendulum: "pendulum 2s ease-in-out infinite",
       },
     },
   },

@@ -2,10 +2,9 @@ import React from "react";
 import { FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import NavLink from "./navlink";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
-  const isLoggedIn = false;
-
   return (
     <nav className="container mt-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg flex items-center justify-between px-4 lg:px-8 py-4">
       {/* Logo Section */}
@@ -29,34 +28,36 @@ const Header = () => {
         >
           Pricing
         </NavLink>
-        {isLoggedIn && (
+        <SignedIn>
           <NavLink
             href="/dashboard"
             className="text-gray-700 hover:text-rose-500 transition-all duration-300 font-medium relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-rose-400 after:transition-all after:duration-300"
           >
             Your Summaries
           </NavLink>
-        )}
+        </SignedIn>
       </div>
 
       {/* Right Side Auth Buttons */}
       <div className="flex lg:justify-end lg:flex-1">
-        {isLoggedIn ? (
+        <SignedIn>
           <div className="flex gap-2 items-center">
             <NavLink href="/upload">Upload a PDF</NavLink>
             <div className="text-white">Pro</div>
-            <Button>User</Button>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
-        ) : (
-          <div>
-            <NavLink
-              href="/sign-in"
-              className="text-gray-700 hover:text-rose-500 transition-all duration-300 font-medium relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-rose-400 after:transition-all after:duration-300"
-            >
-              Sign In
-            </NavLink>
-          </div>
-        )}
+        </SignedIn>
+
+        <SignedOut>
+          <NavLink
+            href="/sign-in"
+            className="text-gray-700 hover:text-rose-500 transition-all duration-300 font-medium relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-rose-400 after:transition-all after:duration-300"
+          >
+            Sign In
+          </NavLink>
+        </SignedOut>
       </div>
     </nav>
   );

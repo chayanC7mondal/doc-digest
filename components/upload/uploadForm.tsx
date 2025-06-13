@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
 
 import UploadFormInput from "./uploadFormInput";
 import { z } from "zod";
 import { file } from "zod/v4";
+import { UploadButton } from "@/utils/uploadthing";
 
 const schema = z.object({
   file: z
@@ -17,6 +18,7 @@ const schema = z.object({
 });
 
 export default function UploadForm() {
+  //schema with zod
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("submitted");
@@ -30,7 +32,7 @@ export default function UploadForm() {
       );
       return;
     }
-    //schema with zod
+
     //upload the file to uploadthing
     //parse the pdf using langchain
     //summarize the pdf using AI

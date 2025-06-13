@@ -1,90 +1,84 @@
-// "use client";
-
-// import React from "react";
-// import { Button } from "../ui/button";
-// import { Input } from "../ui/input";
-// import { UploadButton } from "@/utils/uploadthing";
-
-// interface UploadFormInputProps {
-//   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-// }
-
-// export default function UploadFormInput({ onSubmit }: UploadFormInputProps) {
-//   return (
-//     <div>
-//       <form className="flex flex-col gap-6" onSubmit={onSubmit}>
-//         <div className="flex justify-end items-center gap-1.5">
-//           <Input
-//             type="file"
-//             id="file"
-//             name="file"
-//             accept="application/pdf"
-//             className=""
-//           />
-//           <UploadButton
-//             endpoint="pdfUploader"
-//             onClientUploadComplete={(res) => {
-//               // Do something with the response
-//               console.log("Files: ", res);
-//               console.log("Uploaded successfully!");
-//             }}
-//             onUploadError={(error: Error) => {
-//               // Do something with the error.
-//               console.log(`ERROR! ${error.message}`);
-//             }}
-//           />
-
-//           <Button className="bg-rose-500">Upload your PDF</Button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { UploadDropzone } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
+import { useRef } from "react";
 
-export default function UploadFormInput() {
+interface UploadFormInputProps {
+  onUploadComplete: (url: string) => void;
+}
+
+export default function UploadFormInput({
+  onUploadComplete,
+}: UploadFormInputProps) {
+  const toastIdRef = useRef<string | number | null>(null);
+
   return (
-    <div className="flex justify-center items-center p-6">
-      <UploadDropzone
-        endpoint="pdfUploader"
-        onClientUploadComplete={() => {
-          toast.success("✅ Upload complete!");
-        }}
-        onUploadError={(error: Error) => {
-          toast.error(`❌ Upload failed: ${error.message}`);
-        }}
-        config={{
-          mode: "auto",
-          cn: twMerge,
-        }}
-        appearance={{
-          container: ({ ready, isUploading }) =>
-            twMerge(
-              "w-full max-w-4xl h-62 px-8 py-6 border-2 border-dashed rounded-2xl text-center transition duration-200",
-              "bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md shadow-md",
-              ready && "border-pink-400",
-              isUploading && "opacity-50 cursor-not-allowed"
-            ),
-          uploadIcon: () =>
-            "text-6xl text-rose-400/50 mx-auto mb-3 transition-transform group-hover:scale-105",
-          label: () =>
-            "text-xl font-bold text-zinc-800 dark:text-white tracking-wide",
-          allowedContent: () =>
-            "text-sm text-zinc-600 dark:text-zinc-300 italic mt-1",
-          button: ({ isUploading }) =>
-            twMerge(
-              "mt-4 px-6 py-2 rounded-full font-semibold shadow transition-all",
-              "bg-rose-500",
-              "hover:brightness-110",
-              isUploading && "bg-pink-300 cursor-not-allowed"
-            ),
-        }}
-      />
+    <div className="flex justify-center items-center py-6">
+      <div className="group w-full max-w-4xl overflow-visible">
+        <UploadDropzone
+          endpoint="pdfUploader"
+          onUploadBegin={() => {
+            toastIdRef.current = toast(
+              <div className="text-left">
+                <p className="font-semibold text-base">
+                  📖 Reading in progress...
+                </p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-1">
+                  Our AI is carefully scanning your document. Hang tight! ✨
+                </p>
+              </div>,
+              {
+                id: "upload-toast",
+                duration: 999999,
+              }
+            );
+          }}
+          onClientUploadComplete={(res) => {
+            toast.dismiss("upload-toast");
+            toast.success("✅ Upload complete!");
+            const uploadedUrl = res?.[0]?.url;
+            if (uploadedUrl) {
+              onUploadComplete(uploadedUrl);
+            } else {
+              toast.error("❌ Something went wrong: No file URL received.");
+            }
+          }}
+          onUploadError={(error: Error) => {
+            toast.error(`❌ Upload failed: ${error.message}`, {
+              id: "upload-toast",
+            });
+          }}
+          config={{
+            mode: "auto",
+            cn: twMerge,
+          }}
+          appearance={{
+            container: ({ ready, isUploading }) =>
+              twMerge(
+                "w-full h-64 px-10 py-8 border-2 border-dashed rounded-2xl text-center transition-all duration-300",
+                "bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md shadow-md",
+                "group-hover:shadow-[0_4px_30px_rgba(244,114,182,0.4)]",
+                ready && "border-rose-400",
+                isUploading && "opacity-50 cursor-not-allowed"
+              ),
+            uploadIcon: () =>
+              "text-6xl text-rose-400/50 mx-auto mb-3 transition-transform group-hover:scale-110",
+            label: () =>
+              "text-xl font-bold text-zinc-800 dark:text-white tracking-wide",
+            allowedContent: () =>
+              "text-sm text-zinc-600 dark:text-zinc-300 italic mt-1",
+            button: ({ isUploading }) =>
+              twMerge(
+                "mt-5 px-8 py-3 rounded-full font-semibold shadow-md transition-all",
+                "bg-rose-500 text-white",
+                "hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 active:shadow-sm",
+                isUploading && "bg-pink-300 cursor-not-allowed"
+              ),
+          }}
+        />
+      </div>
     </div>
   );
 }

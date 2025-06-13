@@ -23,10 +23,10 @@ export default function RootLayout({
         <body className={inter.className}>
           <div className="relative flex min-h-screen flex-col">
             <Header />
-            <Toaster position="top-center" />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+          <Toaster position="top-center" />
         </body>
       </html>
     </ClerkProvider>

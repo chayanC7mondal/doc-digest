@@ -1,12 +1,17 @@
 "use client";
-
 import { UploadDropzone } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 import { useRef } from "react";
 
+// Updated interface to match the file object structure
 interface UploadFormInputProps {
-  onUploadComplete: (url: string) => void;
+  onUploadComplete: (file: {
+    url: string;
+    name: string;
+    size: number;
+    key: string;
+  }) => void;
 }
 
 export default function UploadFormInput({
@@ -38,11 +43,18 @@ export default function UploadFormInput({
           onClientUploadComplete={(res) => {
             toast.dismiss("upload-toast");
             toast.success("✅ Upload complete!");
-            const uploadedUrl = res?.[0]?.url;
-            if (uploadedUrl) {
-              onUploadComplete(uploadedUrl);
+
+            const uploadedFile = res?.[0];
+            if (uploadedFile) {
+              // Pass the complete file object instead of just the URL
+              onUploadComplete({
+                url: uploadedFile.url,
+                name: uploadedFile.name,
+                size: uploadedFile.size,
+                key: uploadedFile.key,
+              });
             } else {
-              toast.error("❌ Something went wrong: No file URL received.");
+              toast.error("❌ Something went wrong: No file received.");
             }
           }}
           onUploadError={(error: Error) => {

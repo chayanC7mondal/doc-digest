@@ -1,6 +1,7 @@
 "use server";
 
 import { fetchAndExtractPdfText } from "@/lib/langchain";
+import { generateSummaryFromOpenAI } from "@/lib/openai";
 
 // Updated parameter type to match what's actually being passed
 export async function generatePdfSummary(file: {
@@ -27,7 +28,21 @@ export async function generatePdfSummary(file: {
     // Here you can add additional processing/summarization logic
     // For now, returning the extracted text as the "summary"
     // You could integrate with OpenAI or other LLM APIs here to create an actual summary
-
+    let summary;
+    try {
+      summary = await generateSummaryFromOpenAI(pdfText);
+      console.log("Generated Summary:", summary);
+    } catch (error) {
+      console.log("Error generating summary:", error);
+      // call gemini code
+    }
+    if (!summary) {
+      return {
+        success: false,
+        message: "Failed to generate summary from PDF text",
+        data: null,
+      };
+    }
     return {
       success: true,
       message: "PDF processed successfully",

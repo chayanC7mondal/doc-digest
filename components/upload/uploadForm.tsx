@@ -3,33 +3,30 @@
 import React, { useState } from "react";
 import UploadFormInput from "./uploadFormInput";
 import { toast } from "sonner";
+import { generatePdfSummary } from "@/actions/upload-actions";
 
 // Example function — replace with actual LangChain API call
-async function generatePdfSummary(url: string) {
-  const res = await fetch("/api/parse-pdf", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
-  });
 
-  if (!res.ok) throw new Error("Parsing failed");
-  const data = await res.json();
-  return data.summary;
-}
-
+type UploadedFile = {
+  name: string;
+  url: string;
+  size: number;
+  key: string;
+};
 export default function UploadForm() {
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  //upload the file to uploadthing
-  const handleUploadComplete = async (url: string) => {
-    setFileUrl(url);
+  const handleUploadComplete = async (file: UploadedFile) => {
     toast.info("✨ Parsing the document with AI...");
+
+    //upload the file to uploadthing
+
     //parse the pdf using langchain
     try {
-      const summary = await generatePdfSummary(url);
+      const summary = await generatePdfSummary({ url: file.url });
+
       toast.success("✅ Summary ready!");
       console.log("Summary:", summary);
 
-      // Optional: Redirect or store in DB here
+      // Store to DB or Redirect
     } catch (err) {
       toast.error("❌ Error while parsing document");
       console.error(err);

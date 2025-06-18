@@ -26,8 +26,8 @@ export default function UploadForm() {
 
       if (result.success) {
         toast.success("✅ Summary ready!");
-        setSummary(result.data || "");
-        console.log("Summary:", result.data);
+        setSummary(result.summary || "");
+        console.log("Summary:", result.summary);
         // Store to DB or Redirect
       } else {
         toast.error(`❌ ${result.message}`);

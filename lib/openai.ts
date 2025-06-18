@@ -1,8 +1,44 @@
 import OpenAI from "openai";
+import { SUMMARY_SYSTEM_PROMPT } from "@/utils/prompts";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Fixed: Common env var name
 });
+
+// Local fallback summary generator
+export function generateLocalSummary(pdfText: string): string {
+  // Split into paragraphs and clean up
+  const paragraphs = pdfText
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+
+  // Get first few paragraphs
+  const preview = paragraphs.slice(0, 3).join("\n\n");
+
+  // Extract key points (looking for bullet points or numbered lists)
+  const keyPoints = pdfText
+    .split("\n")
+    .filter((line) => line.trim().match(/^[•\-\*]\s|^\d+\.\s/))
+    .slice(0, 5)
+    .map((point) => point.trim());
+
+  // Format the summary
+  let summary = "📝 **Document Summary**\n\n";
+  summary += "**Preview:**\n" + preview + "\n\n";
+
+  if (keyPoints.length > 0) {
+    summary += "**Key Points:**\n";
+    keyPoints.forEach((point) => {
+      summary += `• ${point.replace(/^[•\-\*]\s|^\d+\.\s/, "")}\n`;
+    });
+  }
+
+  summary +=
+    "\n*This is a basic summary generated locally. For a more detailed AI-powered summary, please try again later when the OpenAI service is available.*";
+
+  return summary;
+}
 
 export async function generateSummaryFromOpenAI(pdfText: string) {
   try {
@@ -12,12 +48,13 @@ export async function generateSummaryFromOpenAI(pdfText: string) {
       messages: [
         {
           role: "system",
-          content:
-            "You are a helpful assistant that creates concise, professional summaries of documents. Focus on key points, main topics, and important details.", // Fixed: More appropriate system prompt
+          content: SUMMARY_SYSTEM_PROMPT, // Fixed: More appropriate system prompt
         },
         {
           role: "user",
-          content: ``, // Fixed: Added the actual PDF text
+          content: `Transform this document in to an engaging, easy-to-read summary with contextually relevant emojis and proper markdown formatting:\n\n${pdfText}`,
+          // Fixed: Added template literal for PDF text
+          // Fixed: Added the actual PDF text
         },
       ],
       temperature: 0.7,
@@ -29,10 +66,13 @@ export async function generateSummaryFromOpenAI(pdfText: string) {
     // Added type annotation
     console.error("OpenAI API Error:", error);
 
-    if (error?.status === 429) {
-      throw new Error("Rate limit exceeded. Please try again later.");
+    // For rate limit errors, return local summary instead of throwing
+    if (error?.status === 429 || error?.code === "insufficient_quota") {
+      console.log("⚠️ OpenAI quota exceeded, using local fallback");
+      return generateLocalSummary(pdfText);
     }
 
+    // For other errors, throw to be handled by the caller
     if (error?.status === 401) {
       throw new Error("Invalid API key. Please check your OpenAI API key.");
     }

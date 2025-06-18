@@ -42,14 +42,42 @@ export async function generatePdfSummary(file: {
       };
     }
 
-    // Generate summary
+    // Generate summary with fallback strategy
     console.log("🤖 Attempting AI summary generation...");
-    const summary = await generateSummaryFromOpenAI(pdfText);
-    const summarySource = summary.includes(
-      "This is a basic summary generated locally"
-    )
-      ? "Local"
-      : "OpenAI";
+
+    let summary: string;
+    let summarySource: string;
+
+    try {
+      // Try OpenAI first
+      summary = await generateSummaryFromOpenAI(pdfText);
+      summarySource = summary.includes(
+        "This is a basic summary generated locally"
+      )
+        ? "Local"
+        : "OpenAI";
+    } catch (openAIError: any) {
+      console.log("⚠️ OpenAI failed, trying Gemini...", openAIError.message);
+
+      try {
+        // Try Gemini as fallback
+        summary = await generateSummaryFromGemini(pdfText);
+        summarySource = summary.includes(
+          "This is a basic summary generated locally"
+        )
+          ? "Local"
+          : "Gemini";
+      } catch (geminiError: any) {
+        console.log(
+          "⚠️ Gemini also failed, using local summary...",
+          geminiError.message
+        );
+
+        // Final fallback to local summary
+        summary = generateLocalSummary(pdfText);
+        summarySource = "Local";
+      }
+    }
 
     console.log(`✅ Summary generated successfully (${summarySource})`);
     console.log("\n📝 Generated Summary:");
@@ -57,45 +85,30 @@ export async function generatePdfSummary(file: {
     console.log(summary);
     console.log("----------------------------------------\n");
 
-    // return {
-    //   success: true,
-    //   message: `PDF processed successfully using ${summarySource} summarization`,
-    //   data: {
-    //     fileName,
-    //     fileSize: file.size,
-    //     fileKey: file.key,
-    //     textLength: pdfText.length,
-    //     extractedText: pdfText,
-    //     summarySource,
-    //   },
-    //   summary,
-    // };
+    return {
+      success: true,
+      message: `PDF processed successfully using ${summarySource} summarization`,
+      data: {
+        fileName,
+        fileSize: file.size,
+        fileKey: file.key,
+        textLength: pdfText.length,
+        extractedText: pdfText,
+        summarySource,
+      },
+      summary,
+    };
   } catch (error) {
     console.error("❌ Error processing PDF:", error);
 
-    if (error instanceof Error && error.message === "RATE_LIMIT_EXCEEDED") {
-      try {
-        const pdfText = await fetchAndExtractPdfText(pdfUrl);
-        const summary = await generateSummaryFromGemini(pdfText);
-      } catch (geminiError) {
-        console.error(
-          "❌ Gemini Api failed after OPENAI quota exceeded",
-          geminiError
-        );
-        throw new Error(
-          "Failed to generate summary with available AI providers"
-        );
-      }
-    }
-
-    // return {
-    //   success: false,
-    //   message: `Error processing PDF: ${
-    //     error instanceof Error ? error.message : "Unknown error"
-    //   }`,
-    //   data: null,
-    //   summary: null,
-    // };
+    return {
+      success: false,
+      message: `Error processing PDF: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+      data: null,
+      summary: null,
+    };
   }
 }
 
@@ -106,13 +119,67 @@ export async function checkOpenAIStatus() {
     const testResult = await generateSummaryFromOpenAI(
       "Test document for API health check."
     );
-    return { available: true, message: "OpenAI API is working" };
+    return {
+      available: true,
+      message: "OpenAI API is working",
+      source: testResult.includes("This is a basic summary generated locally")
+        ? "Local"
+        : "OpenAI",
+    };
   } catch (error: any) {
     return {
       available: false,
       message: error.message.includes("quota")
         ? "API quota exceeded"
         : "API unavailable",
+      error: error.message,
     };
   }
+}
+
+// Additional utility function to check Gemini status
+export async function checkGeminiStatus() {
+  try {
+    const testResult = await generateSummaryFromGemini(
+      "Test document for API health check."
+    );
+    return {
+      available: true,
+      message: "Gemini API is working",
+      source: testResult.includes("This is a basic summary generated locally")
+        ? "Local"
+        : "Gemini",
+    };
+  } catch (error: any) {
+    return {
+      available: false,
+      message:
+        error.message.includes("quota") || error.message.includes("rate limit")
+          ? "API quota/rate limit exceeded"
+          : "API unavailable",
+      error: error.message,
+    };
+  }
+}
+
+// Comprehensive API status check
+export async function checkAllAPIStatus() {
+  const [openAIStatus, geminiStatus] = await Promise.allSettled([
+    checkOpenAIStatus(),
+    checkGeminiStatus(),
+  ]);
+
+  return {
+    openAI:
+      openAIStatus.status === "fulfilled"
+        ? openAIStatus.value
+        : { available: false, message: "Check failed" },
+    gemini:
+      geminiStatus.status === "fulfilled"
+        ? geminiStatus.value
+        : { available: false, message: "Check failed" },
+    hasAvailableAPI:
+      (openAIStatus.status === "fulfilled" && openAIStatus.value.available) ||
+      (geminiStatus.status === "fulfilled" && geminiStatus.value.available),
+  };
 }

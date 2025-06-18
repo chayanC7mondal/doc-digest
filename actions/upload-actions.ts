@@ -1,5 +1,6 @@
 "use server";
 
+import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAI, generateLocalSummary } from "@/lib/openai";
 
@@ -56,29 +57,45 @@ export async function generatePdfSummary(file: {
     console.log(summary);
     console.log("----------------------------------------\n");
 
-    return {
-      success: true,
-      message: `PDF processed successfully using ${summarySource} summarization`,
-      data: {
-        fileName,
-        fileSize: file.size,
-        fileKey: file.key,
-        textLength: pdfText.length,
-        extractedText: pdfText,
-        summarySource,
-      },
-      summary,
-    };
+    // return {
+    //   success: true,
+    //   message: `PDF processed successfully using ${summarySource} summarization`,
+    //   data: {
+    //     fileName,
+    //     fileSize: file.size,
+    //     fileKey: file.key,
+    //     textLength: pdfText.length,
+    //     extractedText: pdfText,
+    //     summarySource,
+    //   },
+    //   summary,
+    // };
   } catch (error) {
     console.error("❌ Error processing PDF:", error);
-    return {
-      success: false,
-      message: `Error processing PDF: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
-      data: null,
-      summary: null,
-    };
+
+    if (error instanceof Error && error.message === "RATE_LIMIT_EXCEEDED") {
+      try {
+        const pdfText = await fetchAndExtractPdfText(pdfUrl);
+        const summary = await generateSummaryFromGemini(pdfText);
+      } catch (geminiError) {
+        console.error(
+          "❌ Gemini Api failed after OPENAI quota exceeded",
+          geminiError
+        );
+        throw new Error(
+          "Failed to generate summary with available AI providers"
+        );
+      }
+    }
+
+    // return {
+    //   success: false,
+    //   message: `Error processing PDF: ${
+    //     error instanceof Error ? error.message : "Unknown error"
+    //   }`,
+    //   data: null,
+    //   summary: null,
+    // };
   }
 }
 

@@ -48,7 +48,7 @@ export default function UploadFormInput({
             if (uploadedFile) {
               // Pass the complete file object instead of just the URL
               onUploadComplete({
-                url: uploadedFile.url,
+                url: uploadedFile.ufsUrl,
                 name: uploadedFile.name,
                 size: uploadedFile.size,
                 key: uploadedFile.key,

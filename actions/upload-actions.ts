@@ -4,7 +4,23 @@ import { getDbConnection } from "@/lib/db";
 import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAI, generateLocalSummary } from "@/lib/openai";
+import { formatFileNameAsTitle } from "@/utils/format-utils";
 import { auth } from "@clerk/nextjs/server";
+interface PdfSummaryType {
+  userId: string;
+  fileUrl: string;
+  summary: string;
+  title: string;
+  fileName: string;
+}
+
+// Fixed: Separate interface for storePdfSummaryAction parameters
+interface StorePdfSummaryParams {
+  fileUrl: string;
+  summary: string;
+  title: string;
+  fileName: string;
+}
 
 // Updated parameter type to match what's actually being passed
 export async function generatePdfSummary(file: {
@@ -52,23 +68,19 @@ export async function generatePdfSummary(file: {
 
     try {
       // Try OpenAI first
+      console.log("🔄 Trying OpenAI...");
       summary = await generateSummaryFromOpenAI(pdfText);
-      summarySource = summary.includes(
-        "This is a basic summary generated locally"
-      )
-        ? "Local"
-        : "OpenAI";
+      summarySource = "OpenAI";
+      console.log("✅ OpenAI summary generated successfully");
     } catch (openAIError: any) {
       console.log("⚠️ OpenAI failed, trying Gemini...", openAIError.message);
 
       try {
         // Try Gemini as fallback
+        console.log("🔄 Trying Gemini...");
         summary = await generateSummaryFromGemini(pdfText);
-        summarySource = summary.includes(
-          "This is a basic summary generated locally"
-        )
-          ? "Local"
-          : "Gemini";
+        summarySource = "Gemini";
+        console.log("✅ Gemini summary generated successfully");
       } catch (geminiError: any) {
         console.log(
           "⚠️ Gemini also failed, using local summary...",
@@ -76,8 +88,10 @@ export async function generatePdfSummary(file: {
         );
 
         // Final fallback to local summary
+        console.log("🔄 Using local summary as final fallback...");
         summary = generateLocalSummary(pdfText);
         summarySource = "Local";
+        console.log("✅ Local summary generated");
       }
     }
 
@@ -87,6 +101,7 @@ export async function generatePdfSummary(file: {
     console.log(summary);
     console.log("----------------------------------------\n");
 
+    const formattedFileName = formatFileNameAsTitle(fileName);
     return {
       success: true,
       message: `PDF processed successfully using ${summarySource} summarization`,
@@ -186,52 +201,86 @@ export async function checkAllAPIStatus() {
   };
 }
 
-async function savePdfSummary() {
-  //sql inserting pdf summary
+async function savePdfSummary({
+  userId,
+  fileUrl,
+  summary,
+  title,
+  fileName,
+}: PdfSummaryType) {
   try {
     const sql = await getDbConnection();
-    await sql`INSERT INTO pdf_summaries (
-    user_id,
-    original_file_url,
-    summary_text,
- 
-    title,
-    file_name
-) VALUES (
-    'user_id',
-    'your_original_file_url',
-    'your_summary_text',
-    'completed',
-    'your_summary_title',
-    'your_file_name'
-)`;
+
+    // Fixed: Return the inserted record
+    const result = await sql`
+      INSERT INTO pdf_summaries (
+        user_id,
+        original_file_url,
+        summary_text,
+        title,
+        file_name
+      ) VALUES (
+        ${userId},
+        ${fileUrl},
+        ${summary},
+        ${title},
+        ${fileName}
+      )
+      RETURNING *
+    `;
+
+    return result[0]; // Return the first (and only) inserted record
   } catch (error) {
     console.error("Error saving PDF summary:", error);
     throw error;
   }
 }
 
-export async function storePdfSummaryAction() {
-  //user is logged in and has an user id
-  //savePdf Summary
-  //savePdfSummary()
-  let savePdfSummary;
+// Fixed: Use the correct interface
+export async function storePdfSummaryAction({
+  fileUrl,
+  summary,
+  title,
+  fileName,
+}: StorePdfSummaryParams) {
   try {
     const { userId } = await auth();
+
     if (!userId) {
       return {
         success: false,
         message: "User not found. Please log in.",
       };
     }
-    savePdfSummary = await savePdfSummary();
+
+    // Fixed: Actually use the returned value
+    const savedSummary = await savePdfSummary({
+      userId,
+      fileUrl,
+      summary,
+      title,
+      fileName,
+    });
+
+    // Fixed: Check if we got a result back
+    if (!savedSummary) {
+      return {
+        success: false,
+        message: "Failed to save PDF summary, please try again.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "PDF summary saved successfully",
+      data: savedSummary, // Include the saved data
+    };
   } catch (error) {
+    console.error("Error in storePdfSummaryAction:", error);
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "Error Saving Pdf Summary",
-      data: null,
-      summary: null,
+        error instanceof Error ? error.message : "Error Saving PDF Summary",
     };
   }
 }

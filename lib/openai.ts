@@ -44,7 +44,7 @@ export async function generateSummaryFromOpenAI(pdfText: string) {
   try {
     const completion = await client.chat.completions.create({
       // Fixed: Use chat.completions
-      model: "gpt-4o", // Fixed: Use valid model name
+      model: "gpt-3.5-turbo", // Fixed: Use valid model name
       messages: [
         {
           role: "system",

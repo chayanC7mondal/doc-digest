@@ -183,3 +183,19 @@ export async function checkAllAPIStatus() {
       (geminiStatus.status === "fulfilled" && geminiStatus.value.available),
   };
 }
+
+export async function storePdfSummaryAction() {
+  //user is logged in and has an user id
+  //savePdf Summary
+  //savePdfSummary()
+
+  try {
+  } catch (error) {
+    return {
+      success: false,
+      message: "File Upload Failed - No file or URL provided",
+      data: null,
+      summary: null,
+    };
+  }
+}

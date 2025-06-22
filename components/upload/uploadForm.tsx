@@ -6,6 +6,7 @@ import {
   generatePdfSummary,
   storePdfSummaryAction,
 } from "@/actions/upload-actions";
+import { useRouter } from "next/navigation";
 
 // Updated type to match what UploadThing returns
 type UploadedFile = {
@@ -18,6 +19,7 @@ type UploadedFile = {
 export default function UploadForm() {
   const [summary, setSummary] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
 
   const handleUploadComplete = async (file: UploadedFile) => {
     setIsProcessing(true);
@@ -53,6 +55,7 @@ export default function UploadForm() {
               });
 
               //redirect to the [id] summary page
+              router.push(`summaries/${storeResult.data.id}`);
             } else {
               toast.error("❌ Failed to save summary", {
                 description:

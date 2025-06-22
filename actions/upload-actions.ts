@@ -1,8 +1,10 @@
 "use server";
 
+import { getDbConnection } from "@/lib/db";
 import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAI, generateLocalSummary } from "@/lib/openai";
+import { auth } from "@clerk/nextjs/server";
 
 // Updated parameter type to match what's actually being passed
 export async function generatePdfSummary(file: {
@@ -184,16 +186,50 @@ export async function checkAllAPIStatus() {
   };
 }
 
+async function savePdfSummary() {
+  //sql inserting pdf summary
+  try {
+    const sql = await getDbConnection();
+    await sql`INSERT INTO pdf_summaries (
+    user_id,
+    original_file_url,
+    summary_text,
+ 
+    title,
+    file_name
+) VALUES (
+    'user_id',
+    'your_original_file_url',
+    'your_summary_text',
+    'completed',
+    'your_summary_title',
+    'your_file_name'
+)`;
+  } catch (error) {
+    console.error("Error saving PDF summary:", error);
+    throw error;
+  }
+}
+
 export async function storePdfSummaryAction() {
   //user is logged in and has an user id
   //savePdf Summary
   //savePdfSummary()
-
+  let savePdfSummary;
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return {
+        success: false,
+        message: "User not found. Please log in.",
+      };
+    }
+    savePdfSummary = await savePdfSummary();
   } catch (error) {
     return {
       success: false,
-      message: "File Upload Failed - No file or URL provided",
+      message:
+        error instanceof Error ? error.message : "Error Saving Pdf Summary",
       data: null,
       summary: null,
     };

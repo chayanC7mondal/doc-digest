@@ -51,6 +51,8 @@ export default function UploadForm() {
                 description:
                   "Your PDF summary has been successfully generated and saved!",
               });
+
+              //redirect to the [id] summary page
             } else {
               toast.error("❌ Failed to save summary", {
                 description:

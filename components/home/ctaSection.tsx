@@ -22,7 +22,7 @@ export default function CTASection() {
               <Button
                 size="lg"
                 variant="link"
-                className="relative overflow-hidden text-white mt-4 text-base sm:text-xl rounded-lg px-7 sm:px-10 lg:px-12 py-4 sm:py-7 lg:py-7 lg:mt-14 font-medium transition-all duration-500 ease-in-out bg-gradient-to-r from-slate-900 via-rose-500 to-rose-800 bg-[length:200%_100%] bg-left hover:bg-right hover:gradient-move hover:no-underline"
+                className="relative overflow-hidden text-white mt-4 text-base sm:text-xl rounded-lg px-5 sm:px-10 lg:px-10 py-4 sm:py-7 lg:py-7 lg:mt-14 font-medium transition-all duration-500 ease-in-out bg-gradient-to-r from-slate-900 via-rose-500 to-rose-800 bg-[length:200%_100%] bg-left hover:bg-right hover:gradient-move hover:no-underline"
               >
                 <Link
                   href="/#pricing"

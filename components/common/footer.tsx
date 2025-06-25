@@ -9,6 +9,7 @@ import {
 // import { Button } from './ui/button';
 import { Button } from "../ui/button";
 import NavLink from "./navlink";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -64,64 +65,65 @@ const Footer = () => {
 
             {/* Social Icons */}
             <div className="flex justify-center gap-3">
-              <a
+              <Link
                 href="#"
                 className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
                 <Instagram className="w-4 h-4 text-gray-700" />
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="https://www.linkedin.com/in/chayan-mondal-881962177/"
+                target="_blank"
                 className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
                 <Linkedin className="w-4 h-4 text-gray-700" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
                 <Github className="w-4 h-4 text-gray-700" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="p-2.5 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110"
               >
                 <MessageCircle className="w-4 h-4 text-gray-700" />
-              </a>
+              </Link>
             </div>
 
             {/* Navigation Links */}
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              <a
+              <Link
                 href="#"
                 className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white/20 hover:text-pink-600 transition-all duration-200 font-medium"
               >
                 Testimonials
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white/20 hover:text-pink-600 transition-all duration-200 font-medium"
               >
                 Documentation
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white/20 hover:text-pink-600 transition-all duration-200 font-medium"
               >
                 Help Center
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white/20 hover:text-pink-600 transition-all duration-200 font-medium"
               >
                 Community
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white/20 hover:text-pink-600 transition-all duration-200 font-medium"
               >
                 Terms of Service
-              </a>
+              </Link>
             </div>
 
             {/* Support Button */}

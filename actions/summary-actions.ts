@@ -20,7 +20,7 @@ export async function deleteSummaryAction({
     //delete summary from the database
     const result = await sql` 
     DELETE FROM pdf_summaries
-    WHERE id= ${summaryId}'your-uuid-here' AND user_id=${userId}
+    WHERE id= ${summaryId} AND user_id=${userId}
     RETURNING id;
     `;
 

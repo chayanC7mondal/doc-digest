@@ -16,6 +16,7 @@ export default function DashboardPage() {
 
       created_at: "2025-06-22 10:40:01.325723+00",
       summary_text: "description",
+      status: "completed",
     },
   ];
 

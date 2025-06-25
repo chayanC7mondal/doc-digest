@@ -6,19 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Plus, ArrowRight } from "lucide-react";
 
 import SummaryCard from "@/components/summaries/summary-card";
+import { getSummaries } from "@/lib/summaries";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await currentUser();
+  const userId = user?.id;
+  if (!userId) {
+    return redirect("/sign-in");
+  }
+
   const uploadLimit = 5;
-  const summaries = [
-    {
-      id: 1,
-      title: "Cohort Hiring",
+  const summaries = await getSummaries(userId);
+  // [
+  //   {
+  //     id: 1,
+  //     title: "Cohort Hiring",
 
-      created_at: "2025-06-22 10:40:01.325723+00",
-      summary_text: "description",
-      status: "completed",
-    },
-  ];
+  //     created_at: "2025-06-22 10:40:01.325723+00",
+  //     summary_text: "description",
+  //     status: "completed",
+  //   },
+  // ];
 
   return (
     <main className="min-h-screen">

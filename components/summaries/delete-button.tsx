@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import React from "react";
+import React, { useTransition } from "react";
 import { Button } from "../ui/button";
 
 import {
@@ -22,17 +22,20 @@ interface DeleteButtonProps {
 
 export default function DeleteButton({ summaryId }: DeleteButtonProps) {
   const [open, setOpen] = useState(false);
-
+  const [isPending, startTransition] = useTransition();
   const handleDelete = async () => {
-    // Implement the delete logic here
-    //await deleteSummary(summaryId);
-    const result = await deleteSummaryAction({ summaryId });
-    if (!result) {
-      toast.error("Failed to delete summary");
-    } else {
-      toast.success("Summary deleted");
-    }
-    setOpen(false);
+    startTransition(async () => {
+      // Implement the delete logic here
+      //await deleteSummary(summaryId);
+      //start transition react hook
+      const result = await deleteSummaryAction({ summaryId });
+      if (!result.success) {
+        toast.error("Failed to delete summary");
+      } else {
+        toast.success("Summary deleted");
+      }
+      setOpen(false);
+    });
   };
 
   return (
@@ -67,7 +70,7 @@ export default function DeleteButton({ summaryId }: DeleteButtonProps) {
             className="px-2 text-gray-700 bg-gray-50 border border-gray-200 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-700 "
             onClick={handleDelete}
           >
-            Delete
+            {isPending ? "Deleting" : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

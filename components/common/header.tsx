@@ -95,52 +95,56 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/20 bg-white/5 backdrop-blur-md rounded-b-3xl">
-          <div className="px-6 py-6 space-y-1">
+      <div
+        className={`lg:hidden border-t border-white/20 bg-white/5 backdrop-blur-md rounded-b-3xl overflow-hidden transition-all duration-300 ease-in-out ${
+          isMobileMenuOpen
+            ? "max-h-96 opacity-100 translate-y-0"
+            : "max-h-0 opacity-0 -translate-y-4"
+        }`}
+      >
+        <div className="px-6 py-6 space-y-1">
+          <NavLink
+            href="/#pricing"
+            className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
+            onClick={closeMobileMenu}
+          >
+            Pricing
+          </NavLink>
+
+          <SignedIn>
             <NavLink
-              href="/#pricing"
+              href="/dashboard"
               className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
               onClick={closeMobileMenu}
             >
-              Pricing
+              Your Summaries
+            </NavLink>
+            <NavLink
+              href="/upload"
+              className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
+              onClick={closeMobileMenu}
+            >
+              Upload a PDF
             </NavLink>
 
-            <SignedIn>
-              <NavLink
-                href="/dashboard"
-                className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
-                onClick={closeMobileMenu}
-              >
-                Your Summaries
-              </NavLink>
-              <NavLink
-                href="/upload"
-                className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
-                onClick={closeMobileMenu}
-              >
-                Upload a PDF
-              </NavLink>
+            {/* User section with better spacing and centered */}
+            <div className="flex flex-col items-center justify-center py-4 mt-4 border-t border-white/10 space-y-2">
+              <UserButton />
+              <span className="text-white text-sm font-medium">Pro</span>
+            </div>
+          </SignedIn>
 
-              {/* User section with better spacing and centered */}
-              <div className="flex flex-col items-center justify-center py-4 mt-4 border-t border-white/10 space-y-2">
-                <UserButton />
-                <span className="text-white text-sm font-medium">Pro</span>
-              </div>
-            </SignedIn>
-
-            <SignedOut>
-              <NavLink
-                href="/sign-in"
-                className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
-                onClick={closeMobileMenu}
-              >
-                Sign In
-              </NavLink>
-            </SignedOut>
-          </div>
+          <SignedOut>
+            <NavLink
+              href="/sign-in"
+              className="flex items-center justify-center text-gray-700 hover:text-rose-500 hover:bg-white/10 transition-all duration-300 font-medium py-3 px-4 rounded-lg text-center"
+              onClick={closeMobileMenu}
+            >
+              Sign In
+            </NavLink>
+          </SignedOut>
         </div>
-      )}
+      </div>
     </nav>
   );
 };

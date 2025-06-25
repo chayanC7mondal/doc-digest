@@ -9,6 +9,15 @@ import SummaryCard from "@/components/summaries/summary-card";
 
 export default function DashboardPage() {
   const uploadLimit = 5;
+  const summaries = [
+    {
+      id: 1,
+      title: "Cohort Hiring",
+
+      created_at: "2025-06-22 10:40:01.325723+00",
+      summary_text: "description",
+    },
+  ];
 
   return (
     <main className="min-h-screen">
@@ -56,7 +65,7 @@ export default function DashboardPage() {
               plan.&nbsp;
               <Link
                 href="/#pricing"
-                className="inline-flex items-center underline underline-offset-4 font-medium"
+                className="inline-flex items-center underline underline-offset-4 font-medium hover:underline-offset-8 transition-all duration-300 ease-in-out"
               >
                 Click here to upgrade to&nbsp;Pro&nbsp;
                 <ArrowRight className="h-4 w-4" />
@@ -68,8 +77,8 @@ export default function DashboardPage() {
 
         {/* summary list */}
         <div className="grid  grid-cols-1 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
-          {[...Array(uploadLimit)].map((_, i) => (
-            <SummaryCard key={i} />
+          {summaries.map((summary, index) => (
+            <SummaryCard key={index} summary={summary} />
           ))}
         </div>
       </div>

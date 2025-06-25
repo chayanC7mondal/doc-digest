@@ -14,6 +14,7 @@ export default function SummaryCard({ summary }: { summary: any }) {
           <h3 className="text-base xl:text-lg font-semibold text-gray-900 truncate w-4/5 ">
             {summary.title}
           </h3>
+          <p>{summary.summary_text}</p>
           <p className="text-sm text-gray-500">2025</p>
         </Link>
       </Card>

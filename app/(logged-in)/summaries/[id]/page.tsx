@@ -1,5 +1,9 @@
 import React from "react";
 
-export default function SummaryPage() {
-  return <div>SummaryPage</div>;
+export default async function SummaryPage(props: {
+  params: Promise<{ id: string }>;
+}) {
+  const params = await props.params;
+  const id = params.id;
+  return <div>SummaryPage {id}</div>;
 }

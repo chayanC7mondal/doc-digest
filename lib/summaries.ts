@@ -10,10 +10,22 @@ export async function getSummaries(userId: string) {
 export async function getSummaryById(id: string) {
   try {
     const sql = await getDbConnection();
-    const result = await sql`SELECT * FROM pdf_summaries WHERE id=${id}`;
+    const [summary] = await sql`SELECT 
+    id, 
+    user_id,
+     title,
+      original_file_url, 
+      summary_text,
+      
+      created_at,
+       updated_at, 
+       status,
+       file_name, 
+       LENGTH(summary_text) - LENGTH(REPLACE ( summary_text, ' ', '')) + 1 as word_count
+        from pdf_summaries where id=${id} `;
 
     // Return the first row if found, otherwise null
-    return result.length > 0 ? result[0] : null;
+    return summary;
   } catch (error) {
     console.error("Error fetching summary by ID:", error);
     return null;

@@ -16,7 +16,7 @@ export default async function SummaryPage(props: {
     notFound();
   }
 
-  const { title, summary_text, file_name } = summary;
+  const { title, summary_text, file_name, word_count } = summary;
 
   return (
     <div className="relative isolate min-h-screen bg-linear-to-b from-rose-50/40 to-white ">
@@ -49,7 +49,7 @@ export default async function SummaryPage(props: {
                 py-1 sm:py-1.5 rounded-full shadow-xs"
               >
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-rose-400" />
-                {summary.word_count?.toLocaleString()} words
+                {word_count?.toLocaleString()} words
               </div>
 
               {/* summary viewer */}
@@ -57,7 +57,7 @@ export default async function SummaryPage(props: {
                 className="relative mt-8 sm:mt-6 flex
                 justify-center"
               >
-                {/* <SummaryViewer summary={summary_text} /> */}
+                <SummaryViewer summary={summary_text} />
               </div>
             </div>
           </div>

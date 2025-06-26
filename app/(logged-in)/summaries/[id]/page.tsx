@@ -17,8 +17,15 @@ export default async function SummaryPage(props: {
     notFound();
   }
 
-  const { title, summary_text, file_name, word_count, created_at } = summary;
-
+  const {
+    title,
+    summary_text,
+    file_name,
+    word_count,
+    created_at,
+    reading_time,
+  } = summary;
+  const readingTime = Math.ceil((word_count || 0) / 200); // Assuming average reading speed of 200 wpm
   return (
     <div className="relative isolate min-h-screen bg-linear-to-b from-rose-50/40 to-white ">
       <BgGradient className="from-rose-400 via-rose-300 to-orange-200 " />
@@ -26,7 +33,11 @@ export default async function SummaryPage(props: {
       <div className="container mx-auto flex flex-col gap-4">
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-24">
           <div className="flex flex-col">
-            <SummaryHeader title={title} createdAt={created_at} />
+            <SummaryHeader
+              title={title}
+              createdAt={created_at}
+              readingTime={readingTime}
+            />
           </div>
 
           {file_name && <SourceInfo fileName={file_name} />}

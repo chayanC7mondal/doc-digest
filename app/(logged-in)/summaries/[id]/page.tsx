@@ -2,6 +2,8 @@ import BgGradient from "@/components/common/bg-gradient";
 import { getSummaryById } from "@/lib/summaries";
 import { notFound } from "next/navigation";
 import { FileText, Calendar } from "lucide-react";
+import SummaryHeader from "@/components/summaries/summary-header";
+import SourceInfo from "@/components/summaries/source-info";
 
 export default async function SummaryPage(props: {
   params: Promise<{ id: string }>;
@@ -21,9 +23,9 @@ export default async function SummaryPage(props: {
       <div className="container mx-auto flex flex-col gap-4">
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-24">
           <div className="flex flex-col">
-            <h1>{title}</h1>
+            <SummaryHeader title={title} />
           </div>
-          {file_name && <p>{file_name}</p>}
+          {file_name && <SourceInfo fileName={file_name} />}
         </div>
       </div>
     </div>

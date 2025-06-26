@@ -45,7 +45,12 @@ const parseSection = (section: string) => {
 export default function SummaryViewer({ summary }: { summary: string }) {
   const [currentSection, setCurrentSection] = useState(0);
 
-  //parseSummary
+  const handleNext = () =>
+    setCurrentSection((prev) => Math.min(prev + 1, sections.length - 1));
+
+  const handlePrevious = () =>
+    setCurrentSection((prev) => Math.max(prev - 1, 0));
+
   const sections = summary
     .split("\n#")
     .map((section) => section.trim())
@@ -62,8 +67,8 @@ export default function SummaryViewer({ summary }: { summary: string }) {
         <NavigationControls
           currentSection={currentSection}
           totalSections={sections.length}
-          onPrevious={() => setCurrentSection(currentSection - 1)}
-          onNext={() => setCurrentSection(currentSection + 1)}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
           onSelectionSelect={setCurrentSection}
         />
       </CardContent>

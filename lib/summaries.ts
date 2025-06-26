@@ -10,8 +10,10 @@ export async function getSummaries(userId: string) {
 export async function getSummaryById(id: string) {
   try {
     const sql = await getDbConnection();
-    const { summary } = await sql`SELECT * FROM pdf_summaries where id=${id}`;
-    return summary;
+    const result = await sql`SELECT * FROM pdf_summaries WHERE id=${id}`;
+
+    // Return the first row if found, otherwise null
+    return result.length > 0 ? result[0] : null;
   } catch (error) {
     console.error("Error fetching summary by ID:", error);
     return null;

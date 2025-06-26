@@ -65,32 +65,26 @@ export async function generatePdfSummary(file: {
     // Generate summary with fallback strategy
     console.log("🤖 Attempting AI summary generation...");
 
-    let summary: string;
-    let summarySource: string;
+    let summary: string = "";
+    let summarySource: string = "";
 
     try {
-      // Try OpenAI first
-      console.log("🔄 Trying OpenAI...");
-      summary = await generateSummaryFromOpenAI(pdfText);
-      summarySource = "OpenAI";
-      console.log("✅ OpenAI summary generated successfully");
-    } catch (openAIError: any) {
-      console.log("⚠️ OpenAI failed, trying Gemini...", openAIError.message);
-
+      // Try Gemini first
+      console.log("🔄 Trying Gemini...");
+      summary = await generateSummaryFromGemini(pdfText);
+      summarySource = "Gemini";
+      console.log("✅ Gemini summary generated successfully");
+    } catch (geminiError: any) {
+      console.log("⚠️ Gemini failed, trying OpenAI...", geminiError.message);
       try {
-        // Try Gemini as fallback
-        console.log("🔄 Trying Gemini...");
-        summary = await generateSummaryFromGemini(pdfText);
-        summarySource = "Gemini";
-        console.log("✅ Gemini summary generated successfully");
-      } catch (geminiError: any) {
+        summary = await generateSummaryFromOpenAI(pdfText);
+        summarySource = "OpenAI";
+        console.log("✅ OpenAI summary generated successfully");
+      } catch (openAIError: any) {
         console.log(
-          "⚠️ Gemini also failed, using local summary...",
-          geminiError.message
+          "⚠️ OpenAI failed, using local summary...",
+          openAIError.message
         );
-
-        // Final fallback to local summary
-        console.log("🔄 Using local summary as final fallback...");
         summary = generateLocalSummary(pdfText);
         summarySource = "Local";
         console.log("✅ Local summary generated");

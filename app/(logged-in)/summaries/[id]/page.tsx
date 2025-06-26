@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FileText } from "lucide-react";
 import SummaryHeader from "@/components/summaries/summary-header";
 import SourceInfo from "@/components/summaries/source-info";
+import SummaryViewer from "@/components/summaries/summary-viewer";
 
 export default async function SummaryPage(props: {
   params: Promise<{ id: string }>;
@@ -16,7 +17,7 @@ export default async function SummaryPage(props: {
     notFound();
   }
 
-  const { title, summary_text, file_name, word_count } = summary;
+  const { title, summary_text, file_name, word_count, created_at } = summary;
 
   return (
     <div className="relative isolate min-h-screen bg-linear-to-b from-rose-50/40 to-white ">
@@ -25,7 +26,7 @@ export default async function SummaryPage(props: {
       <div className="container mx-auto flex flex-col gap-4">
         <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-24">
           <div className="flex flex-col">
-            <SummaryHeader title={title} />
+            <SummaryHeader title={title} createdAt={created_at} />
           </div>
 
           {file_name && <SourceInfo fileName={file_name} />}

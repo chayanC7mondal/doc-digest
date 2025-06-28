@@ -1,17 +1,33 @@
-import { parsePoint } from "@/utils/summary-helpers";
-import { parse } from "path";
+import { parsePoint, parseEmojiPoint } from "@/utils/summary-helpers";
 import React from "react";
-import { parseEmojiPoint } from "@/utils/summary-helpers";
+
+// Function to render text with bold formatting
+const renderTextWithBold = (text: string): React.ReactNode => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      // Remove the ** markers and make bold
+      const boldText = part.slice(2, -2);
+      return (
+        <strong key={index} className="font-semibold">
+          {boldText}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
 
 const EmojiPoint = ({ point }: { point: string }) => {
   const { emoji, text } = parseEmojiPoint(point) ?? {};
   return (
-    <div className="group relative bg-linear-to-br from-gray-200/[0.08] to-gray-400/[0.03] p-4 rounded-2xl border border-gray-500/10 hover:shadow-lg transition-all">
-      <div className="absolute inset-0 bg-linear-to-r from-gray-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+    <div className="group relative bg-gradient-to-br from-gray-200/[0.08] to-gray-400/[0.03] p-4 rounded-2xl border border-gray-500/10 hover:shadow-lg transition-all">
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
       <div className="relative flex items-start gap-3">
         <span className="text-lg lg:text-xl shrink-0 pt-1">{emoji}</span>
         <p className="text-lg lg:text-xl text-muted-foreground/90 leading-relaxed">
-          {text}
+          {renderTextWithBold(text || "")}
         </p>
       </div>
     </div>
@@ -20,10 +36,10 @@ const EmojiPoint = ({ point }: { point: string }) => {
 
 const RegularPoint = ({ point }: { point: string }) => {
   return (
-    <div className="group relative bg-linear-to-br from-gray-200/[0.08] to-gray-400/[0.03] p-4 rounded-2xl border border-gray-500/10 hover:shadow-lg transition-all">
-      <div className="absolute inset-0 bg-linear-to-r from-gray-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+    <div className="group relative bg-gradient-to-br from-gray-200/[0.08] to-gray-400/[0.03] p-4 rounded-2xl border border-gray-500/10 hover:shadow-lg transition-all">
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
       <p className="relative text-lg lg:text-xl text-muted-foreground/90 leading-relaxed text-left">
-        {point}
+        {renderTextWithBold(point)}
       </p>
     </div>
   );
@@ -47,12 +63,10 @@ export default function ContentSection({
         }
 
         if (hasEmoji || isMainPoint) {
-          return (
-            <EmojiPoint key={`point-${index}`} point={point} index={index} />
-          );
+          return <EmojiPoint key={`point-${index}`} point={point} />;
         }
 
-        return <RegularPoint point={point} index={index} />;
+        return <RegularPoint key={`point-${index}`} point={point} />;
       })}
     </div>
   );

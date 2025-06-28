@@ -7,5 +7,11 @@ export default function ContentSection({
   title: string;
   points: string[];
 }) {
-  return <div className="space-y-4"></div>;
+  return (
+    <div className="space-y-4">
+      {points.map((point, index) => {
+        return <p key={point}>{point}</p>;
+      })}
+    </div>
+  );
 }

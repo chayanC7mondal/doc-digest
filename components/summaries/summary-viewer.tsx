@@ -36,7 +36,10 @@ export default function SummaryViewer({ summary }: { summary: string }) {
       <div className="h-full overflow-y-auto scrollbar-hide pt-12 sm:pt-16 pb-20 sm:pb-24">
         <div className="px-4 sm:px-6">
           <SectionTitle title={sections[currentSection]?.title || ""} />
-          <ContentSection />
+          <ContentSection
+            title={sections[currentSection]?.title || ""}
+            points={sections[currentSection]?.points || []}
+          />
         </div>
       </div>
       <NavigationControls

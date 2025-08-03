@@ -1,3 +1,4 @@
+import { handleCheckoutSessionCompleted } from "@/lib/payments";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -15,8 +16,14 @@ export const POST = async (req: NextRequest) => {
     switch (event.type) {
       case "checkout.session.completed":
         console.log("Checkout session completed");
-        const session = event.data.object;
-        console.log(session);
+        const sessionId = event.data.object.id;
+
+        const session = await stripe.checkout.sessions.retrieve(sessionId, {
+          expand: ["line_items"],
+        });
+
+        await handleCheckoutSessionCompleted({ session });
+
         break;
 
       case "customer.subscription.deleted":

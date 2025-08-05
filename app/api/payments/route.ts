@@ -22,7 +22,7 @@ export const POST = async (req: NextRequest) => {
           expand: ["line_items"],
         });
 
-        await handleCheckoutSessionCompleted({ session });
+        await handleCheckoutSessionCompleted({ session, stripe });
 
         break;
 

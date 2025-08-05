@@ -3,10 +3,27 @@ import { getDbConnection } from "./db";
 
 export async function handleCheckoutSessionCompleted({
   session,
+  stripe,
 }: {
   session: Stripe.Checkout.Session;
+  stripe: Stripe;
 }) {
   console.log("Checkout session completed", session);
+  const customerId = session.customer as string;
+  const customer = await stripe.customers.retrieve(customerId);
+  const priceId = session.line_items?.data[0]?.price?.id;
+
+  if ("email" in customer && priceId) {
+    const { email, name } = customer;
+
+    await createOrUpdateUser({
+      email: email as string,
+      fullName: name as string,
+      customerId,
+      priceId: priceId as string,
+      status: "active",
+    });
+  }
 }
 
 async function createOrUpdateUser({
@@ -31,5 +48,25 @@ async function createOrUpdateUser({
     }
   } catch (error) {
     console.log("Error creating or updating user", error);
+  }
+}
+
+async function createPayment({
+  session,
+  priceId,
+  userEmail,
+}: {
+  session: Stripe.Checkout.Session;
+
+  priceId: string;
+  userEmail: string;
+}) {
+  try {
+    const sql = await getDbConnection();
+    const { amount_total, id, customer_email, status } = session;
+
+    await sql`INSERT INTO payments(amount , status, stripe_payment_id, price_id, user_email) VALUES(${amount_total},${status}, ${id}, ${priceId}, ${userEmail})`;
+  } catch (error) {
+    console.error("Error creating payment", error);
   }
 }

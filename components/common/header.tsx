@@ -156,6 +156,7 @@ import { FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import NavLink from "./navlink";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import PlanBadge from "./plan-badge";
 
 const Header = () => {
   return (
@@ -201,7 +202,7 @@ const Header = () => {
             >
               Upload a PDF
             </NavLink>
-            <div className="text-white">Pro</div>
+            <PlanBadge />
             <SignedIn>
               <UserButton />
             </SignedIn>

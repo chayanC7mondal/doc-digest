@@ -1,6 +1,7 @@
-import { handleCheckoutSessionCompleted } from "@/lib/payments";
+import { handleCheckoutSessionCompleted, handleSubscriptionDeleted} from "@/lib/payments";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -30,7 +31,13 @@ export const POST = async (req: NextRequest) => {
         console.log("Checkout subscription deleted");
 
         const subscription = event.data.object;
+        const subscriptionId = event.data.object.id;
+
+
+        await handleSubscriptionDeleted({subscriptionId, stripe});
         console.log(subscription);
+
+
         break;
 
       default:

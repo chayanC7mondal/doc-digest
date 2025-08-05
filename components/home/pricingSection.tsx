@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { PricingPlans } from "@/utils/constants";
 import { ArrowRight, CheckIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -13,34 +14,6 @@ type PriceType = {
   priceId: string;
 };
 
-const plans = [
-  {
-    id: "basic",
-    name: "Basic",
-    description: "Perfect for occasional use",
-    price: 9,
-    items: [
-      "5 PDF summaries per month",
-      "Standard processing speed",
-      "Email support",
-    ],
-    paymentLink: "",
-    priceId: "",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 19,
-    description: "For professionals and teams",
-    items: [
-      "Unlimited PDF summaries",
-      "Priority processing",
-      "Markdown Export",
-    ],
-    paymentLink: "",
-    priceId: "",
-  },
-];
 const PricingCard = ({
   name,
   price,
@@ -105,7 +78,7 @@ export default function PricingSection() {
           </h2>
         </div>
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
-          {plans.map((plan) => (
+          {PricingPlans.map((plan) => (
             <PricingCard key={plan.id} {...plan} />
           ))}
         </div>

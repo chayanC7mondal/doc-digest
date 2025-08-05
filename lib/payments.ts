@@ -14,7 +14,9 @@ export async function handleSubscriptionDeleted({
 
     const sql = await getDbConnection();
 
-    await sql`UPDATE users SET status= 'cancelled' WHERE customer_id=&{subscription.customer}`;
+    await sql`UPDATE users SET status= 'cancelled' WHERE customer_id= ${subscription.customer}`;
+    console.log("Subscription Deleted for customer:", subscription.customer);
+
     console.log("Subscription cancelled successfully");
   } catch (error) {
     console.log("Error handling subscription deleted", error);
@@ -74,6 +76,7 @@ async function createOrUpdateUser({
     const user = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (user.length == 0) {
       await sql`INSERT INTO users (email, full_name, customer_id, price_id, status) VALUES (${email}, ${fullName}, ${customerId}, ${priceId}, ${status})`;
+      console.log("Creating/Updating user with status:", status);
     }
   } catch (error) {
     console.log("Error creating or updating user", error);

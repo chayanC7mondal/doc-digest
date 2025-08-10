@@ -10,6 +10,7 @@ import { getSummaries } from "@/lib/summaries";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EmptySummaryState from "@/components/summaries/empty-summary-state";
+import { hasReachedUploadLimit } from "@/lib/user";
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -18,18 +19,8 @@ export default async function DashboardPage() {
     return redirect("/sign-in");
   }
 
-  const uploadLimit = 5;
+  const { hasReachedLimit, uploadLimit } = await hasReachedUploadLimit(userId);
   const summaries = await getSummaries(userId);
-  // [
-  //   {
-  //     id: 1,
-  //     title: "Cohort Hiring",
-
-  //     created_at: "2025-06-22 10:40:01.325723+00",
-  //     summary_text: "description",
-  //     status: "completed",
-  //   },
-  // ];
 
   return (
     <main className="min-h-screen">
@@ -49,43 +40,47 @@ export default async function DashboardPage() {
           </div>
 
           {/* primary action */}
-          <Button
-            asChild
-            variant="link"
-            className="
+          {hasReachedLimit && (
+            <Button
+              asChild
+              variant="link"
+              className="
               bg-gradient-to-r from-slate-900 via-rose-500 to-rose-800
               bg-[length:200%_100%] bg-left hover:bg-right
               hover:scale-105 transition-all duration-500 ease-in-out
               !text-white hover:no-underline
             "
-          >
-            <Link
-              href="/upload"
-              className="flex items-center gap-2  hover:no-underline"
             >
-              <Plus className="w-5 h-5" />
-              New&nbsp;Summary
-            </Link>
-          </Button>
+              <Link
+                href="/upload"
+                className="flex items-center gap-2  hover:no-underline"
+              >
+                <Plus className="w-5 h-5" />
+                New&nbsp;Summary
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* usage-limit banner */}
-        <div className="my-7">
-          <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-800">
-            <p className="text-sm">
-              You’ve reached the limit of {uploadLimit} uploads on the Basic
-              plan.&nbsp;
-              <Link
-                href="/#pricing"
-                className="inline-flex items-center underline underline-offset-4 font-medium hover:underline-offset-8 transition-all duration-300 ease-in-out"
-              >
-                Click here to upgrade to&nbsp;Pro&nbsp;
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              &nbsp;for unlimited uploads.
-            </p>
+        {hasReachedLimit && (
+          <div className="my-7">
+            <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-800">
+              <p className="text-sm">
+                You’ve reached the limit of {uploadLimit} uploads on the Basic
+                plan.&nbsp;
+                <Link
+                  href="/#pricing"
+                  className="inline-flex items-center underline underline-offset-4 font-medium hover:underline-offset-8 transition-all duration-300 ease-in-out"
+                >
+                  Click here to upgrade to&nbsp;Pro&nbsp;
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                &nbsp;for unlimited uploads.
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         {summaries.length == 0 ? (
           <EmptySummaryState />
         ) : (

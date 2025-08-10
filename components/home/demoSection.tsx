@@ -1,4 +1,6 @@
 import { Pizza } from "lucide-react";
+import SummaryViewer from "../summaries/summary-viewer";
+import { demoSummary } from "@/utils/demo-summary";
 
 export default function DemoSection() {
   return (
@@ -31,6 +33,7 @@ export default function DemoSection() {
           </div>
           <div className="flex justify-center items-center px-2 sm:px-4 lg:px-6">
             {/* summary viewer */}
+            <SummaryViewer summary={demoSummary.summary} />
           </div>
         </div>
       </div>

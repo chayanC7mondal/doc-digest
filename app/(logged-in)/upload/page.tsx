@@ -1,8 +1,11 @@
 import BgGradient from "@/components/common/bg-gradient";
 import UploadForm from "@/components/upload/uploadForm";
 import UploadHeader from "@/components/upload/uploadHeader";
+import { hasReachedUploadLimit } from "@/lib/user";
 
-export default function page() {
+export default async function page() {
+  const user = await getCurrentUser();
+  const { hasReachedLimit } = await hasReachedUploadLimit(userId);
   return (
     <section className="min-h-screen">
       <BgGradient />

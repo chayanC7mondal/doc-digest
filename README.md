@@ -47,10 +47,3 @@
 - ☁️ **Vercel / Netlify** – Deployment and hosting  
 
 ---
-
-## 🚀 Getting Started  
-
-### 1️⃣ Clone the repository  
-```bash
-git clone https://github.com/your-username/doc-digest.git
-cd doc-digest

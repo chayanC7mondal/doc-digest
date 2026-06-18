@@ -48,7 +48,7 @@ export default function UploadFormInput({
             if (uploadedFile) {
               // Pass the complete file object instead of just the URL
               onUploadComplete({
-                url: uploadedFile.ufsUrl,
+                url: uploadedFile.url,
                 name: uploadedFile.name,
                 size: uploadedFile.size,
                 key: uploadedFile.key,
@@ -64,7 +64,6 @@ export default function UploadFormInput({
           }}
           config={{
             mode: "auto",
-            cn: twMerge,
           }}
           appearance={{
             container: ({ ready, isUploading }) =>

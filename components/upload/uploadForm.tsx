@@ -48,18 +48,19 @@ export default function UploadForm() {
               fileName: file.name,
             });
 
-            if (storeResult.success) {
+            if (storeResult.success && "data" in storeResult && storeResult.data?.id) {
               toast.success("✅ Summary Generated", {
                 description:
                   "Your PDF summary has been successfully generated and saved!",
               });
 
               //redirect to the [id] summary page
-              router.push(`summaries/${storeResult.data.id}`);
+              router.push(`/summaries/${storeResult.data.id}`);
             } else {
               toast.error("❌ Failed to save summary", {
                 description:
-                  storeResult.message || "Could not save to database",
+                  storeResult.message ||
+                  "The summary was generated, but it could not be saved.",
               });
             }
           } catch (storeError) {
@@ -70,10 +71,21 @@ export default function UploadForm() {
           }
         }
       } else {
-        toast.error(`❌ ${result.message}`);
+        setSummary("");
+        toast.error("❌ Upload could not be processed", {
+          description:
+            result.message ||
+            "Please upload a valid PDF document and try again.",
+        });
       }
     } catch (err) {
-      toast.error("❌ Error while parsing document");
+      setSummary("");
+      toast.error("❌ Error while parsing document", {
+        description:
+          err instanceof Error
+            ? err.message
+            : "Please upload a valid PDF document and try again.",
+      });
       console.error(err);
     } finally {
       setIsProcessing(false);

@@ -1,16 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { SUMMARY_SYSTEM_PROMPT } from "@/utils/prompts";
 
-// Ensure GEMINI_API_KEY is set in your environment variables
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-  throw new Error(
-    "GEMINI_API_KEY environment variable is not set. Please provide your Gemini API key."
-  );
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
-
 // Local fallback summary generator (uncommented and available as backup)
 export const generateLocalSummary = (pdfText: string): string => {
   // Split into paragraphs and clean up
@@ -47,12 +37,22 @@ export const generateLocalSummary = (pdfText: string): string => {
 };
 
 export const generateSummaryFromGemini = async (
-  pdfText: string
+  pdfText: string,
 ): Promise<string> => {
   try {
+    // Lazy initialization: only check/create when needed
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "GEMINI_API_KEY environment variable is not set. Please provide your Gemini API key.",
+      );
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+
     // Use the correct model name and configuration
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", // Fixed model name
+      model: "gemini-1.5-flash", // Fixed model name
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 1500,

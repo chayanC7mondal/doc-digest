@@ -24,6 +24,26 @@ interface StorePdfSummaryParams {
   fileName: string;
 }
 
+function getFriendlyPdfErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  const lowerMessage = message.toLowerCase();
+
+  if (
+    lowerMessage.includes("econnreset") ||
+    lowerMessage.includes("fetch failed") ||
+    lowerMessage.includes("unable to fetch") ||
+    lowerMessage.includes("does not look like a valid pdf")
+  ) {
+    return "This file cannot be processed as a PDF. Please upload a valid PDF document and try again.";
+  }
+
+  if (lowerMessage.includes("invalid pdf") || lowerMessage.includes("pdf file is damaged")) {
+    return "The PDF appears to be damaged or unreadable. Please upload a different PDF file.";
+  }
+
+  return message;
+}
+
 // Updated parameter type to match what's actually being passed
 export async function generatePdfSummary(file: {
   url: string;
@@ -83,7 +103,7 @@ export async function generatePdfSummary(file: {
       } catch (openAIError: any) {
         console.log(
           "⚠️ OpenAI failed, using local summary...",
-          openAIError.message
+          openAIError.message,
         );
         summary = generateLocalSummary(pdfText);
         summarySource = "Local";
@@ -113,12 +133,11 @@ export async function generatePdfSummary(file: {
     };
   } catch (error) {
     console.error("❌ Error processing PDF:", error);
+    const friendlyMessage = getFriendlyPdfErrorMessage(error);
 
     return {
       success: false,
-      message: `Error processing PDF: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
+      message: friendlyMessage,
       data: null,
       summary: null,
     };
@@ -130,7 +149,7 @@ export async function checkOpenAIStatus() {
   try {
     // Try a minimal API call to check if the service is available
     const testResult = await generateSummaryFromOpenAI(
-      "Test document for API health check."
+      "Test document for API health check.",
     );
     return {
       available: true,
@@ -154,7 +173,7 @@ export async function checkOpenAIStatus() {
 export async function checkGeminiStatus() {
   try {
     const testResult = await generateSummaryFromGemini(
-      "Test document for API health check."
+      "Test document for API health check.",
     );
     return {
       available: true,
@@ -240,10 +259,14 @@ export async function storePdfSummaryAction({
   title,
   fileName,
 }: StorePdfSummaryParams) {
+  console.log("🟢 SERVER: storePdfSummaryAction called with:", { fileUrl, title, fileName, summaryLength: summary?.length });
+  
   try {
     const { userId } = await auth();
+    console.log("🟢 SERVER: userId from auth:", userId);
 
     if (!userId) {
+      console.error("🟢 SERVER: No userId found");
       return {
         success: false,
         message: "User not found. Please log in.",
@@ -251,6 +274,7 @@ export async function storePdfSummaryAction({
     }
 
     // Fixed: Actually use the returned value
+    console.log("🟢 SERVER: Calling savePdfSummary...");
     const savedSummary = await savePdfSummary({
       userId,
       fileUrl,
@@ -258,31 +282,35 @@ export async function storePdfSummaryAction({
       title,
       fileName,
     });
+    console.log("🟢 SERVER: savePdfSummary returned:", savedSummary);
 
     // Fixed: Check if we got a result back
     if (!savedSummary) {
+      console.error("🟢 SERVER: savedSummary is null");
       return {
         success: false,
         message: "Failed to save PDF summary, please try again...",
       };
     }
+
+    console.log("🟢 SERVER: Revalidating path /summaries/" + savedSummary.id);
+    revalidatePath(`/summaries/${savedSummary.id}`);
+
+    const finalResult = {
+      success: true,
+      message: "PDF summary saved successfully",
+      data: {
+        id: savedSummary.id,
+      },
+    };
+    console.log("🟢 SERVER: Returning success from storePdfSummaryAction:", finalResult);
+    return finalResult;
   } catch (error) {
-    console.error("Error in storePdfSummaryAction:", error);
+    console.error("🟢 SERVER: Error in storePdfSummaryAction:", error);
     return {
       success: false,
       message:
         error instanceof Error ? error.message : "Error Saving PDF Summary",
     };
   }
-  //revalidate our cache
-  revalidatePath(`/summaries/${savedSummary.id}`);
-
-  return {
-    success: true,
-    message: "PDF summary saved successfully",
-    // Include the saved data
-    data: {
-      id: savedSummary.id,
-    },
-  };
 }

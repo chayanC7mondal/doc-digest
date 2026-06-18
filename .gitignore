@@ -12,7 +12,7 @@
 
 # testing
 /coverage
-
+#i love you neha
 # next.js
 /.next/
 /out/
@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# clerk configuration (can include secrets)
+/.clerk/

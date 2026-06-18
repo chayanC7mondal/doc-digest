@@ -8,12 +8,13 @@ import { redirect } from "next/navigation";
 export default async function page() {
   const user = await currentUser();
   const userId = user?.id;
-  
+
   if (!userId) {
     redirect("/sign-in");
   }
-  
-  const { hasReachedUploadLimit: hasReachedLimit, uploadLimit } = await hasReachedUploadLimit(userId);
+
+  const { hasReachedUploadLimit: hasReachedLimit, uploadLimit } =
+    await hasReachedUploadLimit(userId);
   return (
     <section className="min-h-screen">
       <BgGradient />
@@ -23,7 +24,8 @@ export default async function page() {
           {hasReachedLimit && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-800">
               <p className="text-sm">
-                You've reached the limit of {uploadLimit} uploads on your current plan.
+                You've reached the limit of {uploadLimit} uploads on your
+                current plan.
               </p>
             </div>
           )}

@@ -48,7 +48,11 @@ export default function UploadForm() {
               fileName: file.name,
             });
 
-            if (storeResult.success && "data" in storeResult && storeResult.data?.id) {
+            if (
+              storeResult.success &&
+              "data" in storeResult &&
+              storeResult.data?.id
+            ) {
               toast.success("✅ Summary Generated", {
                 description:
                   "Your PDF summary has been successfully generated and saved!",

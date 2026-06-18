@@ -37,7 +37,10 @@ function getFriendlyPdfErrorMessage(error: unknown) {
     return "This file cannot be processed as a PDF. Please upload a valid PDF document and try again.";
   }
 
-  if (lowerMessage.includes("invalid pdf") || lowerMessage.includes("pdf file is damaged")) {
+  if (
+    lowerMessage.includes("invalid pdf") ||
+    lowerMessage.includes("pdf file is damaged")
+  ) {
     return "The PDF appears to be damaged or unreadable. Please upload a different PDF file.";
   }
 
@@ -259,8 +262,13 @@ export async function storePdfSummaryAction({
   title,
   fileName,
 }: StorePdfSummaryParams) {
-  console.log("🟢 SERVER: storePdfSummaryAction called with:", { fileUrl, title, fileName, summaryLength: summary?.length });
-  
+  console.log("🟢 SERVER: storePdfSummaryAction called with:", {
+    fileUrl,
+    title,
+    fileName,
+    summaryLength: summary?.length,
+  });
+
   try {
     const { userId } = await auth();
     console.log("🟢 SERVER: userId from auth:", userId);
@@ -303,7 +311,10 @@ export async function storePdfSummaryAction({
         id: savedSummary.id,
       },
     };
-    console.log("🟢 SERVER: Returning success from storePdfSummaryAction:", finalResult);
+    console.log(
+      "🟢 SERVER: Returning success from storePdfSummaryAction:",
+      finalResult,
+    );
     return finalResult;
   } catch (error) {
     console.error("🟢 SERVER: Error in storePdfSummaryAction:", error);

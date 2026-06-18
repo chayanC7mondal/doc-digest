@@ -37,7 +37,7 @@ export default function UploadFormInput({
               {
                 id: "upload-toast",
                 duration: 999999,
-              }
+              },
             );
           }}
           onClientUploadComplete={(res) => {
@@ -72,7 +72,7 @@ export default function UploadFormInput({
                 "bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md shadow-md",
                 "group-hover:shadow-[0_4px_30px_rgba(244,114,182,0.4)]",
                 ready && "border-rose-400",
-                isUploading && "opacity-50 cursor-not-allowed"
+                isUploading && "opacity-50 cursor-not-allowed",
               ),
             uploadIcon: () =>
               "text-6xl text-rose-400/50 mx-auto mb-3 transition-transform group-hover:scale-110",
@@ -85,7 +85,7 @@ export default function UploadFormInput({
                 "mt-5 px-8 py-3 rounded-full font-semibold shadow-md transition-all",
                 "bg-rose-500 text-white",
                 "hover:brightness-110 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 active:shadow-sm",
-                isUploading && "bg-pink-300 cursor-not-allowed"
+                isUploading && "bg-pink-300 cursor-not-allowed",
               ),
           }}
         />

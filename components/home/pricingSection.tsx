@@ -14,6 +14,42 @@ type PriceType = {
   priceId: string;
 };
 
+// const plans = [
+//   {
+//     name: "Basic",
+//     price: 9,
+//     description: "Perfect for occasional use",
+//     items: [
+//       "5 PDF summaries per month",
+//       "Standard processing speed",
+//       "Email support",
+//     ],
+//     id: "basic",
+//     paymentLink:
+//       process.env.NODE_ENV === "development"
+//         ? "https://buy.stripe.com/test_28E6oJ2Do4Q78dbaojdfG00"
+//         : "",
+//     priceId: "",
+//   },
+//   {
+//     name: "Pro",
+//     price: 19,
+//     description: "For professionals and teams",
+//     items: [
+//       "Unlimited PDF summaries",
+//       "Priority processing",
+//       "24/7 support",
+//       "Markdown export",
+//     ],
+//     id: "pro",
+//     paymentLink:
+//       process.env.NODE_ENV === "development"
+//         ? "https://buy.stripe.com/test_5kQ4gBgue3M39hf9kfdfG01"
+//         : "",
+//     priceId: "",
+//   },
+// ];
+
 const PricingCard = ({
   name,
   price,
@@ -57,7 +93,7 @@ const PricingCard = ({
               "w-full rounded-full flex items-center justify-center gap-2 bg-linear-to-r from-rose-800 to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2",
               id === "pro"
                 ? "border-rose-900"
-                : "border-rose-100 from-rose-400 to-rose-500"
+                : "border-rose-100 from-rose-400 to-rose-500",
             )}
           >
             Buy Now

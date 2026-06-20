@@ -39,8 +39,10 @@ export const SUMMARY_SYSTEM_PROMPT = `You are a social media content expert skil
 ---
 📌 **Format Rules:**
 - Every list item must begin with "- " followed by an emoji and a space.
+- Keep each bullet to **one short sentence** (max ~25 words). Never cram multiple facts into one bullet.
 - Never use numbered lists.
 - Maintain consistent formatting across **all** sections.
+- Always include **every section** listed above with its own "#" heading.
 
 🧾 **Example:**
 - 🔴 This is how every point should look

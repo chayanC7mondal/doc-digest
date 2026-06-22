@@ -11,9 +11,6 @@ export const PricingPlans = [
       "Standard processing speed",
       "Email support",
     ],
-    paymentLink: isDev
-      ? "https://buy.stripe.com/test_28E6oJ2Do4Q78dbaojdfG00"
-      : "",
     priceId: isDev ? "price_1Rgsy9QiHVtlu1dtHYkH6MVn" : "",
   },
   {
@@ -26,9 +23,6 @@ export const PricingPlans = [
       "Priority processing",
       "Markdown Export",
     ],
-    paymentLink: isDev
-      ? "https://buy.stripe.com/test_5kQ4gBgue3M39hf9kfdfG01"
-      : "",
     priceId: isDev ? "price_1Rgsy9QiHVtlu1dtFRhKBc6w" : "",
   },
 ];

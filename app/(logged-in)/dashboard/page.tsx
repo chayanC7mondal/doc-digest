@@ -10,7 +10,8 @@ import { getSummaries } from "@/lib/summaries";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import EmptySummaryState from "@/components/summaries/empty-summary-state";
-import { hasReachedUploadLimit } from "@/lib/user";
+import { hasReachedUploadLimit, syncUserToDatabase } from "@/lib/user";
+import SyncButton from "@/components/dashboard/sync-button";
 
 export default async function DashboardPage() {
   const user = await currentUser();
@@ -19,7 +20,16 @@ export default async function DashboardPage() {
     return redirect("/sign-in");
   }
 
-  const { hasReachedLimit, uploadLimit } = await hasReachedUploadLimit(userId);
+  // Sync user to database
+  if (user?.emailAddresses?.[0]?.emailAddress) {
+    await syncUserToDatabase({
+      email: user.emailAddresses[0].emailAddress,
+      fullName: user.fullName || null,
+      userId: userId,
+    });
+  }
+
+  const uploadLimitData = await hasReachedUploadLimit(userId);
   const summaries = await getSummaries(userId);
 
   return (
@@ -40,34 +50,37 @@ export default async function DashboardPage() {
           </div>
 
           {/* primary action */}
-          {hasReachedLimit && (
-            <Button
-              asChild
-              variant="link"
-              className="
-              bg-gradient-to-r from-slate-900 via-rose-500 to-rose-800
-              bg-[length:200%_100%] bg-left hover:bg-right
-              hover:scale-105 transition-all duration-500 ease-in-out
-              !text-white hover:no-underline
-            "
-            >
-              <Link
-                href="/upload"
-                className="flex items-center gap-2  hover:no-underline"
+          <div className="flex gap-2">
+            {!uploadLimitData.hasReachedUploadLimit && (
+              <Button
+                asChild
+                variant="link"
+                className="
+                bg-gradient-to-r from-slate-900 via-rose-500 to-rose-800
+                bg-[length:200%_100%] bg-left hover:bg-right
+                hover:scale-105 transition-all duration-500 ease-in-out
+                !text-white hover:no-underline
+              "
               >
-                <Plus className="w-5 h-5" />
-                New&nbsp;Summary
-              </Link>
-            </Button>
-          )}
+                <Link
+                  href="/upload"
+                  className="flex items-center gap-2  hover:no-underline"
+                >
+                  <Plus className="w-5 h-5" />
+                  New&nbsp;Summary
+                </Link>
+              </Button>
+            )}
+            <SyncButton />
+          </div>
         </div>
 
         {/* usage-limit banner */}
-        {hasReachedLimit && (
+        {uploadLimitData.hasReachedUploadLimit && (
           <div className="my-7">
             <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-800">
               <p className="text-sm">
-                You’ve reached the limit of {uploadLimit} uploads on the Basic
+                You've reached the limit of {uploadLimitData.uploadLimit} uploads on the Basic
                 plan.&nbsp;
                 <Link
                   href="/#pricing"

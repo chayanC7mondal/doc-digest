@@ -22,3 +22,36 @@ export async function hasReachedUploadLimit(userId: string) {
 
   return { hasReachedUploadLimit: uploadCount >= uploadLimit, uploadLimit };
 }
+
+export async function syncUserToDatabase({
+  email,
+  fullName,
+  userId,
+}: {
+  email: string;
+  fullName?: string | null;
+  userId: string;
+}) {
+  try {
+    const sql = await getDbConnection();
+    
+    // Check if user already exists
+    const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
+    
+    if (existingUser.length === 0) {
+      // Create new user
+      await sql`
+        INSERT INTO users (email, full_name, customer_id, status)
+        VALUES (${email}, ${fullName || null}, ${userId}, 'inactive')
+      `;
+      console.log("User synced to database:", email);
+    } else {
+      console.log("User already exists in database:", email);
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error syncing user to database:", error);
+    return { success: false, error };
+  }
+}

@@ -39,6 +39,9 @@ export async function handleCheckoutSessionCompleted({
   if ("email" in customer && priceId) {
     const { email, name } = customer;
     const sql = await getDbConnection();
+    
+    console.log("Creating/updating user for:", email);
+    
     await createOrUpdateUser({
       sql,
       email: email as string,
@@ -48,12 +51,16 @@ export async function handleCheckoutSessionCompleted({
       status: "active",
     });
 
+    console.log("User created/updated successfully, now creating payment");
+
     await createPayment({
       sql,
       session,
       priceId: priceId as string,
       userEmail: email as string,
     });
+  } else {
+    console.log("Missing email or priceId in session", { customer, priceId });
   }
 }
 
@@ -76,7 +83,11 @@ async function createOrUpdateUser({
     const user = await sql`SELECT * FROM users WHERE email = ${email}`;
     if (user.length == 0) {
       await sql`INSERT INTO users (email, full_name, customer_id, price_id, status) VALUES (${email}, ${fullName}, ${customerId}, ${priceId}, ${status})`;
-      console.log("Creating/Updating user with status:", status);
+      console.log("Creating user with status:", status);
+    } else {
+      // Update existing user with new customer_id, price_id, and status
+      await sql`UPDATE users SET customer_id = ${customerId}, price_id = ${priceId}, status = ${status} WHERE email = ${email}`;
+      console.log("Updating user with status:", status);
     }
   } catch (error) {
     console.log("Error creating or updating user", error);
@@ -98,9 +109,19 @@ async function createPayment({
   try {
     const { amount_total, id, customer_email, status } = session;
 
+    console.log("Creating payment with data:", {
+      amount_total,
+      status,
+      stripe_payment_id: id,
+      price_id: priceId,
+      user_email: userEmail,
+    });
+
     await sql`INSERT INTO payments(amount, status, stripe_payment_id, price_id, user_email) VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${userEmail})`;
+    
+    console.log("Payment created successfully for user:", userEmail);
   } catch (error) {
-    console.error("Error creating payment", error);
+    console.error("Error creating payment:", error);
     throw error;
   }
 }

@@ -1,8 +1,9 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { PricingPlans } from "@/utils/constants";
-import { ArrowRight, CheckIcon } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+import { ArrowRight, CheckIcon, Loader2 } from "lucide-react";
+import React, { useState } from "react";
 
 type PriceType = {
   id: string;
@@ -10,7 +11,6 @@ type PriceType = {
   description: string;
   price: number;
   items: string[];
-  paymentLink: string;
   priceId: string;
 };
 
@@ -56,8 +56,42 @@ const PricingCard = ({
   description,
   items,
   id,
-  paymentLink,
+  priceId,
 }: PriceType) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePurchase = async () => {
+    if (!priceId) {
+      alert("Price ID not configured");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Checkout session creation failed:", data);
+        alert(`Failed to create checkout session: ${data.error || 'Unknown error'}${data.details ? ` - ${data.details}` : ''}`);
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      alert(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative w-full max-w-lg hover:scale-103 hover:transition-all duration-200">
       <div
@@ -87,18 +121,28 @@ const PricingCard = ({
           ))}
         </div>
         <div className="space-y-2 flex justify-center w-full">
-          <Link
-            href={paymentLink}
+          <button
+            onClick={handlePurchase}
+            disabled={isLoading}
             className={cn(
-              "w-full rounded-full flex items-center justify-center gap-2 bg-linear-to-r from-rose-800 to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2",
+              "w-full rounded-full flex items-center justify-center gap-2 bg-linear-to-r from-rose-800 to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2 disabled:opacity-50 disabled:cursor-not-allowed",
               id === "pro"
                 ? "border-rose-900"
                 : "border-rose-100 from-rose-400 to-rose-500",
             )}
           >
-            Buy Now
-            <ArrowRight size={18} />
-          </Link>
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                Buy Now
+                <ArrowRight size={18} />
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

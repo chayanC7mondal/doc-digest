@@ -11,11 +11,25 @@ export const POST = async (req: NextRequest) => {
   const payload = await req.text();
   const sig = req.headers.get("stripe-signature");
 
+  console.log("Received Stripe webhook");
+  console.log("Payload length:", payload.length);
+  console.log("Signature present:", !!sig);
+
+  if (!payload || payload.length === 0) {
+    console.error("Empty webhook payload received");
+    return NextResponse.json(
+      { error: "No webhook payload was provided" },
+      { status: 400 }
+    );
+  }
+
   let event;
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
   try {
     event = stripe.webhooks.constructEvent(payload, sig!, endpointSecret);
+    console.log("Webhook verified successfully, event type:", event.type);
+
     switch (event.type) {
       case "checkout.session.completed":
         console.log("Checkout session completed");
@@ -44,10 +58,10 @@ export const POST = async (req: NextRequest) => {
         console.log(`Unhandled event type ${event.type}`);
     }
   } catch (err) {
-    console.log(err);
+    console.error("Webhook error:", err);
     return NextResponse.json(
       { error: "Webhook verification failed", details: err },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

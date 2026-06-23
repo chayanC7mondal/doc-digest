@@ -111,6 +111,16 @@ export default function UploadForm() {
       {isProcessing && (
         <div className="text-center text-gray-600">Processing document...</div>
       )}
+      
+      {/* TODO: Add loading skeleton for processing state */}
+      {/* {isProcessing && (
+        <div className="mt-8 p-4 border rounded-lg bg-gray-50">
+          <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4 mb-4" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-2" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6 mb-2" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-4/6" />
+        </div>
+      )} */}
     </div>
   );
 }

@@ -103,6 +103,13 @@ export default async function DashboardPage() {
             ))}
           </div>
         )}
+        
+        {/* TODO: Add loading skeleton for summaries grid */}
+        {/* <div className="grid grid-cols-1 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-48 bg-gray-200 rounded-lg animate-pulse" />
+            ))}
+          </div> */}
       </div>
     </main>
   );

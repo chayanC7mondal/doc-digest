@@ -58,9 +58,24 @@ export default function UploadFormInput({
             }
           }}
           onUploadError={(error: Error) => {
-            toast.error(`❌ Upload failed: ${error.message}`, {
-              id: "upload-toast",
-            });
+            // Check if it's a token/configuration error
+            const isTokenError = error.message.includes("Invalid token") || 
+                                error.message.includes("apiKey") ||
+                                error.message.includes("appId");
+            
+            if (isTokenError) {
+              toast.error(
+                "❌ Upload service temporarily unavailable. Please try again later.",
+                {
+                  id: "upload-toast",
+                  description: "Our upload service is experiencing issues. Please wait a moment and try again.",
+                }
+              );
+            } else {
+              toast.error(`❌ Upload failed: ${error.message}`, {
+                id: "upload-toast",
+              });
+            }
           }}
           config={{
             mode: "auto",

@@ -73,3 +73,28 @@ export default function SummaryCard({ summary }: { summary: any }) {
     </div>
   );
 }
+
+/* TODO: Add loading skeleton component for SummaryCard
+export function SummaryCardSkeleton() {
+  return (
+    <Card className="relative h-full">
+      <div className="block p-4 sm:p-6">
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <div className="flex items-start gap-2 sm:gap-4">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded animate-pulse mt-1" />
+            <div className="flex-1 min-w-0">
+              <div className="h-5 bg-gray-200 rounded animate-pulse w-4/5 mb-2" />
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3" />
+            </div>
+          </div>
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-2 pl-3" />
+          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 pl-3" />
+          <div className="flex justify-between items-center mt-2 sm:mt-4">
+            <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+*/

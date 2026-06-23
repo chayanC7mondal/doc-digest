@@ -28,25 +28,29 @@ export const POST = async (req: NextRequest) => {
 
       if ("email" in customer && priceId) {
         const { email, name } = customer;
+        const normalizedEmail = (email as string).toLowerCase();
         const sql = await getDbConnection();
 
-        // Sync user to database
+        console.log("Syncing user with email:", normalizedEmail);
+
+        // Don't sync user with customerId to avoid unique constraint conflicts
+        // Only sync with email and name
         await syncUserToDatabase({
-          email: email as string,
+          email: normalizedEmail,
           fullName: name as string,
-          userId: customerId,
+          userId: normalizedEmail, // Use email as userId instead of customerId
         });
 
         // Update user with payment info
-        const user = await sql`SELECT * FROM users WHERE email = ${email}`;
+        const user = await sql`SELECT * FROM users WHERE LOWER(email) = ${normalizedEmail}`;
         
         if (user.length > 0) {
+          // Only update price_id and status - don't touch customer_id to avoid unique constraint conflicts
           await sql`
             UPDATE users 
-            SET customer_id = ${customerId}, 
-                price_id = ${priceId}, 
-                status = 'active' 
-            WHERE email = ${email}
+            SET price_id = ${priceId}, 
+                status = 'active'
+            WHERE LOWER(email) = ${normalizedEmail}
           `;
           console.log("User updated with payment info");
 
@@ -54,7 +58,22 @@ export const POST = async (req: NextRequest) => {
           const { amount_total, id, status } = session;
           await sql`
             INSERT INTO payments(amount, status, stripe_payment_id, price_id, user_email)
-            VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${email})
+            VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${normalizedEmail})
+          `;
+          console.log("Payment record created");
+        } else {
+          // User doesn't exist, create new user
+          await sql`
+            INSERT INTO users (email, full_name, price_id, status)
+            VALUES (${normalizedEmail}, ${name as string}, ${priceId}, 'active')
+          `;
+          console.log("New user created with payment info");
+
+          // Create payment record
+          const { amount_total, id, status } = session;
+          await sql`
+            INSERT INTO payments(amount, status, stripe_payment_id, price_id, user_email)
+            VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${normalizedEmail})
           `;
           console.log("Payment record created");
         }

@@ -6,7 +6,12 @@ export async function getPriceIdforActiveUser(email: string) {
   const sql = await getDbConnection();
 
   const query =
-    await sql` SELECT price_id FROM users where email= ${email} AND status= 'active'`;
+    await sql` SELECT price_id FROM users where LOWER(email)= LOWER(${email}) AND status= 'active'`;
+  
+  console.log("getPriceIdforActiveUser - Email:", email);
+  console.log("getPriceIdforActiveUser - Query result:", query);
+  console.log("getPriceIdforActiveUser - PriceId:", query?.[0]?.price_id);
+  
   return query?.[0]?.price_id || null;
 }
 
@@ -34,19 +39,20 @@ export async function syncUserToDatabase({
 }) {
   try {
     const sql = await getDbConnection();
+    const normalizedEmail = email.toLowerCase();
     
-    // Check if user already exists
-    const existingUser = await sql`SELECT * FROM users WHERE email = ${email}`;
+    // Check if user already exists (case-insensitive)
+    const existingUser = await sql`SELECT * FROM users WHERE LOWER(email) = ${normalizedEmail}`;
     
     if (existingUser.length === 0) {
-      // Create new user
+      // Create new user with normalized email
       await sql`
         INSERT INTO users (email, full_name, customer_id, status)
-        VALUES (${email}, ${fullName || null}, ${userId}, 'inactive')
+        VALUES (${normalizedEmail}, ${fullName || null}, ${userId}, 'inactive')
       `;
-      console.log("User synced to database:", email);
+      console.log("User synced to database:", normalizedEmail);
     } else {
-      console.log("User already exists in database:", email);
+      console.log("User already exists in database:", normalizedEmail);
     }
     
     return { success: true };

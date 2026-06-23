@@ -5,6 +5,9 @@ import { Badge } from "../ui/badge";
 import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function PlanBadge() {
   const user = await currentUser();
 
@@ -15,15 +18,22 @@ export default async function PlanBadge() {
 
   if (email) {
     priceId = await getPriceIdforActiveUser(email);
+    console.log("PlanBadge - Email:", email);
+    console.log("PlanBadge - PriceId from DB:", priceId);
   }
 
   let planName = "Buy a Plan";
 
   const plan = PricingPlans.find((plan) => plan.priceId === priceId);
 
+  console.log("PlanBadge - Available plans:", PricingPlans.map(p => ({ id: p.id, priceId: p.priceId })));
+  console.log("PlanBadge - Matched plan:", plan);
+
   if (plan) {
     planName = plan.name;
   }
+
+  console.log("PlanBadge - Final plan name:", planName);
 
   return (
     <Badge

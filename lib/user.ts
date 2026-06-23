@@ -8,9 +8,9 @@ export async function getPriceIdforActiveUser(email: string) {
   const query =
     await sql` SELECT price_id FROM users where LOWER(email)= LOWER(${email}) AND status= 'active'`;
   
-  console.log("getPriceIdforActiveUser - Email:", email);
-  console.log("getPriceIdforActiveUser - Query result:", query);
-  console.log("getPriceIdforActiveUser - PriceId:", query?.[0]?.price_id);
+  // console.log("getPriceIdforActiveUser - Email:", email);
+  // console.log("getPriceIdforActiveUser - Query result:", query);
+  // console.log("getPriceIdforActiveUser - PriceId:", query?.[0]?.price_id);
   
   return query?.[0]?.price_id || null;
 }
@@ -50,9 +50,9 @@ export async function syncUserToDatabase({
         INSERT INTO users (email, full_name, customer_id, status)
         VALUES (${normalizedEmail}, ${fullName || null}, ${userId}, 'inactive')
       `;
-      console.log("User synced to database:", normalizedEmail);
+      // console.log("User synced to database:", normalizedEmail);
     } else {
-      console.log("User already exists in database:", normalizedEmail);
+      // console.log("User already exists in database:", normalizedEmail);
     }
     
     return { success: true };

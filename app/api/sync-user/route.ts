@@ -13,14 +13,14 @@ export const POST = async (req: NextRequest) => {
 
     // If sessionId is provided, sync from Stripe session (after payment)
     if (sessionId) {
-      console.log("Syncing user for session:", sessionId);
+      // console.log("Syncing user for session:", sessionId);
 
       // Retrieve the Stripe session
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
         expand: ["line_items"],
       });
 
-      console.log("Session retrieved:", session.id);
+      // console.log("Session retrieved:", session.id);
 
       const customerId = session.customer as string;
       const customer = await stripe.customers.retrieve(customerId);
@@ -31,7 +31,7 @@ export const POST = async (req: NextRequest) => {
         const normalizedEmail = (email as string).toLowerCase();
         const sql = await getDbConnection();
 
-        console.log("Syncing user with email:", normalizedEmail);
+        // console.log("Syncing user with email:", normalizedEmail);
 
         // Don't sync user with customerId to avoid unique constraint conflicts
         // Only sync with email and name
@@ -52,7 +52,7 @@ export const POST = async (req: NextRequest) => {
                 status = 'active'
             WHERE LOWER(email) = ${normalizedEmail}
           `;
-          console.log("User updated with payment info");
+          // console.log("User updated with payment info");
 
           // Create payment record
           const { amount_total, id, status } = session;
@@ -60,14 +60,14 @@ export const POST = async (req: NextRequest) => {
             INSERT INTO payments(amount, status, stripe_payment_id, price_id, user_email)
             VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${normalizedEmail})
           `;
-          console.log("Payment record created");
+          // console.log("Payment record created");
         } else {
           // User doesn't exist, create new user
           await sql`
             INSERT INTO users (email, full_name, price_id, status)
             VALUES (${normalizedEmail}, ${name as string}, ${priceId}, 'active')
           `;
-          console.log("New user created with payment info");
+          // console.log("New user created with payment info");
 
           // Create payment record
           const { amount_total, id, status } = session;
@@ -75,7 +75,7 @@ export const POST = async (req: NextRequest) => {
             INSERT INTO payments(amount, status, stripe_payment_id, price_id, user_email)
             VALUES(${amount_total}, ${status}, ${id}, ${priceId}, ${normalizedEmail})
           `;
-          console.log("Payment record created");
+          // console.log("Payment record created");
         }
 
         // Revalidate paths to update UI

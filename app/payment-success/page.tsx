@@ -24,7 +24,7 @@ function PaymentSuccessContent() {
         return;
       }
 
-      console.log("Processing payment success with session ID:", sessionId);
+      // console.log("Processing payment success with session ID:", sessionId);
 
       try {
         const response = await fetch("/api/sync-user", {
@@ -37,7 +37,7 @@ function PaymentSuccessContent() {
 
         const data = await response.json();
 
-        console.log("Sync user response:", data);
+        // console.log("Sync user response:", data);
 
         if (response.ok && data.success) {
           setStatus("success");

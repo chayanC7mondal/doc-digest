@@ -38,6 +38,7 @@ export default function SourceInfo({
           title={title}
           summaryText={summaryText}
           fileName={fileName}
+          originalFileUrl={originalFileUrl}
           createdAt={createdAt}
         />
       </div>

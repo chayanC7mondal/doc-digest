@@ -5,8 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -108,5 +109,27 @@ export default function PaymentSuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+        <div className="max-w-md w-full mx-4 p-8 bg-white rounded-2xl shadow-xl">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-16 h-16 text-rose-500 animate-spin" />
+            <h2 className="text-2xl font-bold text-gray-900">
+              Processing your payment...
+            </h2>
+            <p className="text-gray-600 text-center">
+              Please wait while we set up your account.
+            </p>
+          </div>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

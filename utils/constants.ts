@@ -11,7 +11,9 @@ export const PricingPlans = [
       "Standard processing speed",
       "Email support",
     ],
-    priceId: isDev ? "price_1Rgsy9QiHVtlu1dtHYkH6MVn" : "",
+    priceId: isDev 
+      ? "price_1Rgsy9QiHVtlu1dtHYkH6MVn" 
+      : process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID || "",
   },
   {
     id: "pro",
@@ -23,6 +25,8 @@ export const PricingPlans = [
       "Priority processing",
       "Markdown Export",
     ],
-    priceId: isDev ? "price_1Rgsy9QiHVtlu1dtFRhKBc6w" : "",
+    priceId: isDev 
+      ? "price_1Rgsy9QiHVtlu1dtFRhKBc6w" 
+      : process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || "",
   },
 ];

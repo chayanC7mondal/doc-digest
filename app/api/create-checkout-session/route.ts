@@ -20,10 +20,11 @@ export const POST = async (req: NextRequest) => {
     }
 
     console.log("Stripe secret key present:", !!process.env.STRIPE_SECRET_KEY);
+    console.log("NODE_ENV:", process.env.NODE_ENV);
 
     const baseUrl = process.env.NODE_ENV === "development" 
       ? "http://localhost:3000" 
-      : "https://your-domain.com";
+      : process.env.NEXT_PUBLIC_BASE_URL || "https://your-domain.com";
 
     console.log("Base URL:", baseUrl);
     console.log("Success URL:", `${baseUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`);
